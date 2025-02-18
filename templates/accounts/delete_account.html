@@ -1,0 +1,15 @@
+<!-- templates/accounts/delete_account.html -->
+
+{% extends "base.html" %}
+{% block title %}Șterge Cont{% endblock %}
+
+{% block content %}
+<h2>Șterge Cont</h2>
+<p>Ești sigur că dorești să îți ștergi contul? Această acțiune este ireversibilă.</p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Confirmă Ștergerea Contului</button>
+    <!-- Dacă există o pagină de profil sau homepage, poți modifica link-ul de anulare -->
+    <a href="{% url 'home' %}" class="btn btn-secondary">Anulează</a>
+</form>
+{% endblock %}

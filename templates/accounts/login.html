@@ -1,0 +1,21 @@
+<!-- templates/accounts/login.html -->
+
+{% extends "base.html" %}
+{% block title %}Conectare{% endblock %}
+
+{% block content %}
+<h2>Conectare</h2>
+<form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" class="form-control" required>
+    </div>
+    <div class="form-group">
+        <label for="password">Parolă:</label>
+        <input type="password" id="password" name="password" class="form-control" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Conectează-te</button>
+</form>
+<p>Nu ai cont? <a href="{% url 'register' %}">Înregistrează-te</a></p>
+{% endblock %}

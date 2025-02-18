@@ -1,0 +1,27 @@
+<!-- templates/base.html -->
+
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+
+    {%load static%}
+    <meta charset="UTF-8">
+    <title>{% block title %}Proiect Django{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <!-- Poți include aici Bootstrap sau alte framework-uri CSS -->
+</head>
+<body>
+    {% include 'includes/header.html' %}
+    <div class="container">
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li class="alert alert-{{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        {% block content %}
+        {% endblock %}
+    </div>
+</body>
+</html>

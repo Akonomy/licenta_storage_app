@@ -19,4 +19,5 @@ from django.urls import path,include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('apps.core.urls')),  # aplicația principală
+    path('account/', include('apps.accounts.urls')),  # aplicația principală
 ]

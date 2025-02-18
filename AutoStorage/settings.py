@@ -53,7 +53,11 @@ INSTALLED_APPS = [
 
     #my app
 
-    'apps.core'
+    'apps.core',
+    'apps.accounts',
+    'apps.games',
+    'apps.store',
+    'apps.robot_interface'
 ]
 
 MIDDLEWARE = [
@@ -77,8 +81,8 @@ ROOT_URLCONF = 'AutoStorage.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],  # Template-uri globale, aflate în afara aplicațiilor
+        'APP_DIRS': False,  # Nu se mai caută template-uri în directoarele aplicațiilor
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
