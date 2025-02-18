@@ -39,8 +39,9 @@ ALLOWED_HOSTS = [
     'storage-gkdqhderb4b8agdh.westeurope-01.azurewebsites.net',
     '127.0.0.1',
     'localhost',
+    'depozitautomat.shop',
+    'www.depozitautomat.shop',
 ]
-
 # Application definition
 
 INSTALLED_APPS = [
