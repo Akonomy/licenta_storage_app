@@ -3,12 +3,12 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-
-    {%load static%}
     <meta charset="UTF-8">
     <title>{% block title %}Proiect Django{% endblock %}</title>
+    {% load static %}
+
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <!-- Poți include aici Bootstrap sau alte framework-uri CSS -->
+    {% block extra_css %}{% endblock %}
 </head>
 <body>
     {% include 'includes/header.html' %}
@@ -20,8 +20,7 @@
                 {% endfor %}
             </ul>
         {% endif %}
-        {% block content %}
-        {% endblock %}
+        {% block content %}{% endblock %}
     </div>
 </body>
 </html>

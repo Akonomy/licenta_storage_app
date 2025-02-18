@@ -2,6 +2,12 @@
 
 {% extends "base.html" %}
 {% block title %}Înregistrare{% endblock %}
+{% load static %}
+
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'accounts/style.css' %}">
+{% endblock %}
 
 {% block content %}
 <h2>Înregistrare</h2>
