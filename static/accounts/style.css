@@ -1,103 +1,49 @@
-/* Stiluri globale */
-body {
-  background-color: #f5f7fa; /* Fundal subtil, pal */
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+/* static/accounts/style.css */
+
+/* Resetare și fonturi */
+* {
   margin: 0;
   padding: 0;
-  color: #333;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
+  box-sizing: border-box;
+}
+body {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  background: #f8f9fa;
+  color: #212529;
 }
 
-/* Container central pentru formulare */
-.container {
-  background-color: #ffffff;
-  max-width: 400px;  /* Lățime maximă îngustă */
-  width: 90%;
-  padding: 30px;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  margin: 20px;
-}
-
-/* Titluri */
-.container h2 {
-  text-align: center;
-  margin-bottom: 20px;
-  font-size: 1.5em;
-  color: #555;
-}
-
-/* Stiluri pentru formular */
-form {
-  display: flex;
-  flex-direction: column;
-}
-
-input[type="text"],
-input[type="email"],
-input[type="password"],
-input[type="number"] {
-  padding: 10px;
-  margin-bottom: 15px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 1em;
-  transition: border-color 0.3s;
-}
-
-input[type="text"]:focus,
-input[type="email"]:focus,
-input[type="password"]:focus,
-input[type="number"]:focus {
-  border-color: #a0c0d0;
-  outline: none;
-}
-
-/* Butoane */
-button {
-  background-color: #a0c0d0; /* Culoare pale */
-  color: #fff;
-  padding: 12px;
+/* Stilizare card pentru formulare */
+.card {
+  margin-top: 50px;
   border: none;
-  border-radius: 4px;
-  font-size: 1em;
-  cursor: pointer;
-  transition: background-color 0.3s;
+  border-radius: 8px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+  animation: fadeIn 0.5s ease-out;
 }
 
-button:hover {
-  background-color: #90b0c0;
+/* Stilizare pentru titlurile din card */
+.card-title {
+  margin-bottom: 20px;
 }
 
-/* Link-uri pentru navigare (ex: "Ai deja cont? Login") */
-.container a {
-  color: #a0c0d0;
-  text-decoration: none;
-  text-align: center;
-  margin-top: 10px;
-  display: block;
-  transition: color 0.3s;
+/* Stilizare butoane */
+.btn {
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+.btn:hover {
+  transform: translateY(-2px);
 }
 
-.container a:hover {
-  color: #90b0c0;
-}
-
-/* Responsivitate pentru ecrane mici */
-@media (max-width: 480px) {
-  .container {
-    padding: 20px;
-    margin: 10px;
+/* Animație de fadeIn */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
   }
-
-  input[type="text"],
-  input[type="email"],
-  input[type="password"],
-  input[type="number"],
-  button {
-    font-size: 0.95em;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
+
+/* Mesaje de alertă sunt deja stilizate de Bootstrap, eventual suprascrie-le după necesități */

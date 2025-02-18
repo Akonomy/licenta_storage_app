@@ -10,18 +10,22 @@
 {% endblock %}
 
 {% block content %}
-<h2>Conectare</h2>
-<form method="post">
-    {% csrf_token %}
-    <div class="form-group">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" class="form-control" required>
+<div class="card mx-auto" style="max-width: 400px;">
+    <div class="card-body">
+        <h2 class="card-title text-center">Conectare</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="username" class="form-label">Username:</label>
+                <input type="text" id="username" name="username" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Parolă:</label>
+                <input type="password" id="password" name="password" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Conectează-te</button>
+        </form>
+        <p class="mt-3 text-center">Nu ai cont? <a href="{% url 'register' %}">Înregistrează-te</a></p>
     </div>
-    <div class="form-group">
-        <label for="password">Parolă:</label>
-        <input type="password" id="password" name="password" class="form-control" required>
-    </div>
-    <button type="submit" class="btn btn-primary">Conectează-te</button>
-</form>
-<p>Nu ai cont? <a href="{% url 'register' %}">Înregistrează-te</a></p>
+</div>
 {% endblock %}

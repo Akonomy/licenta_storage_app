@@ -1,0 +1,27 @@
+<!-- templates/accounts/profile.html -->
+
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Profilul Meu{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'accounts/style.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="card mx-auto" style="max-width: 600px;">
+    <div class="card-body">
+        <h2 class="card-title text-center">Profilul Meu</h2>
+        <p><strong>Username:</strong> {{ user.username }}</p>
+        <p><strong>Email:</strong> {{ user.email }}</p>
+        <p><strong>Nume:</strong> {{ user.first_name }}</p>
+        <p><strong>Prenume:</strong> {{ user.last_name }}</p>
+        <div class="d-flex justify-content-between mt-4">
+            <a href="{% url 'edit_account' %}" class="btn btn-warning">Editează Cont</a>
+            <a href="{% url 'delete_account' %}" class="btn btn-danger">Șterge Cont</a>
+            <a href="{% url 'logout' %}" class="btn btn-secondary">Deconectare</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
