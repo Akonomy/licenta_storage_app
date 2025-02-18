@@ -28,20 +28,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
-# Preia secret key din .env; asigură-te că valoarea există!
-SECRET_KEY = os.getenv('SECRET_KEY', 'fallback-secret-key')
 
-# Preia DEBUG din .env și convertește-l la valoare booleană
+
+# Secret key din .env
+SECRET_KEY = os.getenv('SECRET_KEY')
+
+# Setarea DEBUG din .env - convertirea din string în boolean
 DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1', 't')
 
+# ALLOWED_HOSTS - poți citi din .env și apoi să-l transformi într-o listă
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
 
-ALLOWED_HOSTS = [
-    'storage-gkdqhderb4b8agdh.westeurope-01.azurewebsites.net',
-    '127.0.0.1',
-    'localhost',
-    'depozitautomat.shop',
-    'www.depozitautomat.shop',
-]
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -55,7 +53,7 @@ INSTALLED_APPS = [
 
     #my app
 
-    'core'
+    'apps.core'
 ]
 
 MIDDLEWARE = [
@@ -98,13 +96,16 @@ WSGI_APPLICATION = 'AutoStorage.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
+# Configurarea bazei de date pentru MongoDB cu djongo
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'djongo',
+        'NAME': os.getenv('MONGO_NAME'),
+        'CLIENT': {
+            'host': os.getenv('MONGO_HOST'),
+        }
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -149,3 +150,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# Pentru a folosi modelul de utilizator personalizat, adaugă și:
+AUTH_USER_MODEL = 'accounts.CustomUser'
