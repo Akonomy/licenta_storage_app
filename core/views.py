@@ -1,3 +1,7 @@
 from django.shortcuts import render
 
-# Create your views here.
+# core/views.py
+from django.http import HttpResponse
+
+def home(request):
+    return HttpResponse("Bine ai venit la aplicația principală!")

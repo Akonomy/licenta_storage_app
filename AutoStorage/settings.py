@@ -35,8 +35,11 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'fallback-secret-key')
 DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1', 't')
 
 
-ALLOWED_HOSTS = ['*']
-
+ALLOWED_HOSTS = [
+    'storage-gkdqhderb4b8agdh.westeurope-01.azurewebsites.net',
+    '127.0.0.1',
+    'localhost',
+]
 
 # Application definition
 
@@ -47,6 +50,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+
+    #my app
+
+    'core'
 ]
 
 MIDDLEWARE = [
