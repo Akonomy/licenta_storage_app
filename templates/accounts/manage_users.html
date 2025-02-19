@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" type="text/css" href="{% static 'accounts/style.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container dark-theme">
+  <h1>Administrare Utilizatori</h1>
+
+  <!-- Formular de căutare -->
+  <form method="get" action="{% url 'manage_users' %}" class="search-form">
+    <input type="text" name="q" placeholder="Caută utilizator (nume sau email)..." value="{{ query }}">
+    <button type="submit">Caută</button>
+  </form>
+
+  <!-- Tabelul cu utilizatori -->
+  <table class="user-table">
+    <thead>
+      <tr>
+         <th>ID</th>
+         <th>Username</th>
+         <th>Email</th>
+         <th>Rol curent</th>
+         <th>Modifică rol</th>
+         <th>Acțiune</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for user in users %}
+      <tr>
+         <td>{{ user.id }}</td>
+         <td>{{ user.username }}</td>
+         <td>{{ user.email }}</td>
+         <td>{{ user.role }}</td>
+         <td>
+           <!-- Formular inline pentru actualizarea rolului -->
+           <form method="post" action="{% url 'manage_users' %}">
+             {% csrf_token %}
+             <input type="hidden" name="user_id" value="{{ user.id }}">
+             <select name="role">
+               <option value="">Selectează rol</option>
+               {% for key, value in ROLE_CHOICES %}
+                  <option value="{{ key }}" {% if user.role == key %}selected{% endif %}>{{ value }}</option>
+               {% endfor %}
+             </select>
+         </td>
+         <td>
+             <button type="submit">Salvează</button>
+           </form>
+         </td>
+      </tr>
+      {% empty %}
+      <tr>
+         <td colspan="6">Nu s-au găsit utilizatori.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -1,10 +1,15 @@
 # apps/accounts/urls.py
-# apps/accounts/urls.py
+
+
+
+
+
+
 
 from django.urls import path
 from .views import (
     login_view, register_view, logout_view, profile_view,
-    edit_account_view, delete_account_view
+    edit_account_view, delete_account_view, manage_users_view
 )
 
 urlpatterns = [
@@ -13,5 +18,6 @@ urlpatterns = [
     path('logout/', logout_view, name='logout'),
     path('delete/', delete_account_view, name='delete_account'),
     path('edit/', edit_account_view, name='edit_account'),
+    path('manage-users/', manage_users_view, name='manage_users'),
     path('', profile_view, name='profile'),  # Ruta default: /accounts/ afișează profilul
 ]
