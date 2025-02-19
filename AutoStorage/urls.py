@@ -20,4 +20,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('apps.core.urls')),  # aplicația principală
     path('account/', include('apps.accounts.urls')),  # aplicația principală
+    path('inventory/', include('apps.inventory.urls')),
+    path('robot/', include('apps.robot_interface.urls')),
 ]
+
+

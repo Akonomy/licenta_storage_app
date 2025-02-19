@@ -1,0 +1,10 @@
+{% extends 'inventory/base.html' %}
+{% block title %}Adaugă Secțiune{% endblock %}
+{% block content %}
+  <h2>Adaugă Secțiune</h2>
+  <form method="post" class="form-container">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn">Salvează</button>
+  </form>
+{% endblock %}

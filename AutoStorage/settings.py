@@ -57,7 +57,8 @@ INSTALLED_APPS = [
     'apps.accounts',
     'apps.games',
     'apps.store',
-    'apps.robot_interface'
+    'apps.robot_interface',
+    'apps.inventory'
 ]
 
 MIDDLEWARE = [

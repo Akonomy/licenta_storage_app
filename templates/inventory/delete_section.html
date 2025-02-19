@@ -1,0 +1,11 @@
+{% extends 'inventory/base.html' %}
+{% block title %}Șterge Secțiune{% endblock %}
+{% block content %}
+  <h2>Șterge Secțiune</h2>
+  <p>Ești sigur că vrei să ștergi secțiunea "{{ section.nume_custom }}"?</p>
+  <form method="post" class="form-container">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Șterge</button>
+    <a href="{% url 'section_list' %}" class="btn">Anulează</a>
+  </form>
+{% endblock %}

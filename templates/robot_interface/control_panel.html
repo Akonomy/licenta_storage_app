@@ -1,0 +1,46 @@
+<!-- robot_interface/templates/robot_interface/control_panel.html -->
+
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Control Panel</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Send Task</button>
+</form>
+
+<script>
+function toggleFields() {
+    var taskType = document.querySelector('select[name="task_type"]').value;
+    var boxField = document.querySelector('select[name="box"]');
+    var targetSectionField = document.querySelector('select[name="target_section"]');
+    var customActionField = document.querySelector('input[name="custom_action"]');
+
+    // Hide all optional fields by default
+    boxField.closest('p').style.display = 'none';
+    targetSectionField.closest('p').style.display = 'none';
+    customActionField.closest('p').style.display = 'none';
+
+    if (taskType === 'move_box' || taskType === 'add_box' || taskType === 'remove_box') {
+        boxField.closest('p').style.display = 'block';
+    }
+
+    if (taskType === 'move_box' || taskType === 'add_box') {
+        targetSectionField.closest('p').style.display = 'block';
+    }
+
+    if (taskType === 'custom_action') {
+        customActionField.closest('p').style.display = 'block';
+    }
+}
+
+// Call toggleFields on page load
+document.addEventListener('DOMContentLoaded', function() {
+    toggleFields();
+});
+
+// Add event listener to task type select field
+document.querySelector('select[name="task_type"]').addEventListener('change', toggleFields);
+</script>
+{% endblock %}

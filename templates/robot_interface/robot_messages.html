@@ -1,0 +1,10 @@
+<!-- templates/robot_interface/robot_messages.html -->
+
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Robot Messages</h1>
+<p>Status: {{ status.get_status_display }}</p>
+<p>Message: {{ status.message }}</p>
+<p>Last Updated: {{ status.updated_at }}</p>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends 'inventory/base.html' %}
+{% block title %}Șterge Cutie{% endblock %}
+{% block content %}
+  <h2>Șterge Cutie</h2>
+  <p>Ești sigur că vrei să ștergi cutia "{{ box.name }}"?</p>
+  <form method="post" class="form-container">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Șterge</button>
+    <a href="{% url 'box_list' %}" class="btn">Anulează</a>
+  </form>
+{% endblock %}

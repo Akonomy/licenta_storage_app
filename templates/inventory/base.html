@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Inventory{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'inventory/style.css' %}">
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1>Inventory Management</h1>
+      <nav>
+        <ul>
+          <li><a href="{% url 'inventory_home' %}">Acasă</a></li>
+          <li><a href="{% url 'box_list' %}">Cutii</a></li>
+          <li><a href="{% url 'section_list' %}">Secțiuni</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+  <main class="container">
+    {% block content %}
+    {% endblock %}
+  </main>
+  <footer>
+    <div class="container">
+      <p>&copy; 2025 Inventory App. Toate drepturile rezervate.</p>
+    </div>
+  </footer>
+</body>
+</html>

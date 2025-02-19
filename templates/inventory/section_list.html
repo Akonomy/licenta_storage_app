@@ -1,0 +1,39 @@
+{% extends 'inventory/base.html' %}
+{% block title %}Lista Secțiuni{% endblock %}
+{% block content %}
+  <h2>Lista Secțiuni</h2>
+  <div class="actions">
+    <a href="{% url 'add_section' %}" class="btn">Adaugă Secțiune</a>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>Nume Secțiune</th>
+        <th>Cod</th>
+        <th>Tip Secțiune</th>
+        <th>Capacitate Maximă</th>
+        <th>Capacitate Curentă</th>
+        <th>Acțiuni</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for section in sections %}
+      <tr>
+        <td>{{ section.nume_custom }}</td>
+        <td>{{ section.code }}</td>
+        <td>{{ section.get_tip_sectie_display }}</td>
+        <td>{{ section.max_capacity }}</td>
+        <td>{{ section.current_capacity }}</td>
+        <td>
+          <a href="{% url 'edit_section' section.id %}">Editează</a> |
+          <a href="{% url 'delete_section' section.id %}">Șterge</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="6">Nu există secțiuni.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block title %}Robot Home{% endblock %}
+
+{% block content %}
+<h1>Bine ai venit la Panoul Robotului</h1>
+<p>Alege una dintre următoarele opțiuni:</p>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Panou de control</h5>
+                <p class="card-text">Vezi toate produsele din inventar.</p>
+                <a href="{% url 'control_panel' %}" class="btn btn-primary">Acceseaza</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Tasks</h5>
+                <p class="card-text">Vezi toate secțiunile din depozit.</p>
+                <a href="{% url 'task_queue' %}" class="btn btn-primary">Acceseaza</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Mesaje</h5>
+                <p class="card-text">Adaugă un nou produs în inventar.</p>
+                <a href="{% url 'robot_messages' %}" class="btn btn-secondary">Acceseaza</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row mt-3">
+
+        <div class="col-md-4 mb-3">
+            <div class="card h-100 shadow-lg">
+                <div class="card-body">
+                    <h5 class="card-title">PREIA TASKURI</h5>
+                    <p class="card-text">fetch_tasks_api</p>
+                    <a href="{% url 'fetch_tasks_api' %}" class="btn btn-secondary">Acceseaza</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="card h-100 shadow-lg">
+                <div class="card-body">
+                    <h5 class="card-title">UPDATE TASK</h5>
+                    <p class="card-text">update_task_status_api</p>
+                    <a href="{% url 'fetch_tasks_api' %}" class="btn btn-secondary">Acceseaza</a>
+                </div>
+            </div>
+        </div>
+   
+
+
+        <div class="col-md-4 mb-3">
+            <div class="card h-100 shadow-lg">
+                <div class="card-body">
+                    <h5 class="card-title">UPDATE ROBOT</h5>
+                    <p class="card-text">update_robot_status_api</p>
+                    <a href="{% url 'fetch_tasks_api' %}" class="btn btn-secondary">Acceseaza</a>
+                </div>
+        </div>
+        </div>
+        
+    </div>
+
+
+
+{% endblock %}

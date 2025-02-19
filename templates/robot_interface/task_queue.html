@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+<head>
+    <link rel="stylesheet" href="{% static 'robot_inventory/css/style.css' %}">
+</head>
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Task Queue</h1>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover text-center">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Task Type</th>
+                    <th>Box</th>
+                    <th>Source Section</th>
+                    <th>Target Section</th>
+                    <th>Status</th>
+                    <th>Created At</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for task in tasks %}
+                <tr>
+                    <td>{{ task.get_task_type_display }}</td>
+                    <td>{{ task.box }}</td>
+                    <td>{{ task.source_section }}</td>
+                    <td>{{ task.target_section }}</td>
+                    <td>
+                        <span class="status-badge {{ task.get_status_display|lower }}">
+                            {{ task.get_status_display }}
+                        </span>
+                    </td>
+                    <td>{{ task.created_at }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

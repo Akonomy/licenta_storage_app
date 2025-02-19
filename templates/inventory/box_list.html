@@ -1,0 +1,41 @@
+{% extends 'inventory/base.html' %}
+{% block title %}Lista Cutii{% endblock %}
+{% block content %}
+  <h2>Lista Cutii</h2>
+  <div class="actions">
+    <a href="{% url 'add_box' %}" class="btn">Adaugă Cutie</a>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>Nume</th>
+        <th>Culoare</th>
+        <th>Cod</th>
+        <th>Preț</th>
+        <th>Secțiune</th>
+        <th>Status</th>
+        <th>Acțiuni</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for box in boxes %}
+      <tr>
+        <td>{{ box.name }}</td>
+        <td>{{ box.get_color_display }}</td>
+        <td>{{ box.code }}</td>
+        <td>{{ box.price }}</td>
+        <td>{% if box.section %}{{ box.section.nume_custom }}{% else %}N/A{% endif %}</td>
+        <td>{{ box.get_status_display }}</td>
+        <td>
+          <a href="{% url 'edit_box' box.id %}">Editează</a> |
+          <a href="{% url 'delete_box' box.id %}">Șterge</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="7">Nu există cutii.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
