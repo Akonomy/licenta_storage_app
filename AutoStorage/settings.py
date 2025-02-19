@@ -58,7 +58,16 @@ INSTALLED_APPS = [
     'apps.games',
     'apps.store',
     'apps.robot_interface',
-    'apps.inventory'
+    'apps.inventory',
+
+
+   
+     #REST FRAMEWORKS
+
+    'rest_framework',
+    #'rest_framework_simplejwt.token_blacklist',
+
+
 ]
 
 MIDDLEWARE = [
@@ -160,6 +169,16 @@ STATICFILES_DIRS = [
 
 
 
+# Configurarea fișierelor media
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
+
+
+
+
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
@@ -173,3 +192,11 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
 LOGIN_URL = '/account/login/'
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'apps.accounts.authentication.CustomJWTAuthentication',
+    ),
+    # alte setări...
+}

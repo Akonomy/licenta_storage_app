@@ -7,13 +7,13 @@ from .models import Box, Section
 from apps.robot_interface.models import Task  # Modelul Task pentru crearea de taskuri
 
 @login_required
-@user_passes_test(lambda u: u.is_master())
+@user_passes_test(lambda u: u.has_page_access('admin'))
 def inventory_home(request):
     return render(request, 'inventory/home.html')
 
 # Vizualizare pentru adăugarea unei noi cutii (Box)
 @login_required
-@user_passes_test(lambda u: u.is_master())
+@user_passes_test(lambda u: u.has_page_access('admin'))
 def add_box(request):
     if request.method == 'POST':
         form = BoxForm(request.POST, request.FILES)
@@ -44,7 +44,7 @@ def add_box(request):
 
 # Vizualizare pentru adăugarea unei noi secțiuni (Section)
 @login_required
-@user_passes_test(lambda u: u.is_master())
+@user_passes_test(lambda u: u.has_page_access('admin'))
 def add_section(request):
     if request.method == 'POST':
         form = SectionForm(request.POST)
@@ -58,7 +58,7 @@ def add_section(request):
 
 # Vizualizare pentru afișarea cutiilor
 @login_required
-@user_passes_test(lambda u: u.is_master() or u.is_admin())
+@user_passes_test(lambda u: u.has_page_access('admin'))
 def box_list(request):
     color = request.GET.get('color')
     section = request.GET.get('section')
@@ -108,7 +108,7 @@ def box_list(request):
 
 # Vizualizare pentru afișarea secțiunilor
 @login_required
-@user_passes_test(lambda u: u.is_master() or u.is_admin())
+@user_passes_test(lambda u: u.has_page_access('admin'))
 def section_list(request):
     sections = Section.objects.all()
     return render(request, 'inventory/section_list.html', {'sections': sections})
@@ -130,7 +130,7 @@ def edit_box(request, box_id):
 
 # Funcția de ștergere a cutiilor
 @login_required
-@user_passes_test(lambda u: u.is_master())
+@user_passes_test(lambda u: u.has_page_access('admin'))
 def delete_box(request, box_id):
     box = get_object_or_404(Box, id=box_id)
     if request.method == 'POST':
@@ -140,7 +140,7 @@ def delete_box(request, box_id):
 
 # Funcția de editare a secțiunilor
 @login_required
-@user_passes_test(lambda u: u.is_master())
+@user_passes_test(lambda u: u.has_page_access('admin'))
 def edit_section(request, section_id):
     section = get_object_or_404(Section, id=section_id)
     if request.method == 'POST':
@@ -154,7 +154,7 @@ def edit_section(request, section_id):
 
 # Funcția de ștergere a secțiunilor
 @login_required
-@user_passes_test(lambda u: u.is_master())
+@user_passes_test(lambda u: u.has_page_access('admin'))
 def delete_section(request, section_id):
     section = get_object_or_404(Section, id=section_id)
     if request.method == 'POST':

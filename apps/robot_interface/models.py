@@ -8,6 +8,7 @@ from apps.inventory.models import Box, Section
 
 User = get_user_model()
 
+
 class Task(models.Model):
     TASK_STATUS_CHOICES = [
         ('pending', 'Pending'),

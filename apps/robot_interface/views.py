@@ -1,14 +1,16 @@
-# apps/robot_interface/views.py
-
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
 from .models import Task, RobotStatus
 from .forms import TaskForm
 from django.http import JsonResponse
+
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.permissions import IsAuthenticated
-from rest_framework_simplejwt.authentication import JWTAuthentication
 
+# Folosește clasa de autentificare personalizată definită în apps.accounts
+from apps.accounts.authentication import CustomJWTAuthentication
+
+# Web interface views (rămân neschimbate)
 def inventory_home(request):
     return render(request, 'robot_interface/robot_interface_home.html')
 
@@ -38,10 +40,10 @@ def control_panel(request):
         form = TaskForm()
     return render(request, 'robot_interface/control_panel.html', {'form': form})
 
-# API views
+# API views folosind autentificarea personalizată
 
 @api_view(['GET'])
-@authentication_classes([JWTAuthentication])
+@authentication_classes([CustomJWTAuthentication])
 @permission_classes([IsAuthenticated])
 def fetch_tasks_api(request):
     tasks = Task.objects.filter(status='pending').order_by('created_at')
@@ -53,8 +55,6 @@ def fetch_tasks_api(request):
             'box_code': task.box.code if task.box else None,
             'custom_action': task.custom_action,
         }
-
-        # Include source section details
         if task.source_section:
             task_data['source_section'] = {
                 'name': task.source_section.name,
@@ -63,7 +63,6 @@ def fetch_tasks_api(request):
         else:
             task_data['source_section'] = None
 
-        # Include target section details
         if task.target_section:
             task_data['target_section'] = {
                 'name': task.target_section.name,
@@ -76,7 +75,7 @@ def fetch_tasks_api(request):
     return JsonResponse({'tasks': tasks_data})
 
 @api_view(['POST'])
-@authentication_classes([JWTAuthentication])
+@authentication_classes([CustomJWTAuthentication])
 @permission_classes([IsAuthenticated])
 def update_task_status_api(request, task_id):
     try:
@@ -92,9 +91,7 @@ def update_task_status_api(request, task_id):
             task.reason = reason
         task.save()
 
-        # Perform actions based on status
         if status == 'completed':
-            # Use inventory methods to move boxes, etc.
             if task.task_type == 'move_box' and task.box and task.source_section and task.target_section:
                 task.source_section.move_box(task.box, task.target_section)
             elif task.task_type == 'add_box' and task.box and task.target_section:
@@ -107,7 +104,7 @@ def update_task_status_api(request, task_id):
         return JsonResponse({'error': 'Task not found'}, status=404)
 
 @api_view(['POST'])
-@authentication_classes([JWTAuthentication])
+@authentication_classes([CustomJWTAuthentication])
 @permission_classes([IsAuthenticated])
 def update_robot_status_api(request):
     status = request.data.get('status')
@@ -124,10 +121,10 @@ def update_robot_status_api(request):
     return JsonResponse({'message': 'Robot status updated'})
 
 @api_view(['GET'])
-@authentication_classes([JWTAuthentication])
+@authentication_classes([CustomJWTAuthentication])
 @permission_classes([IsAuthenticated])
 def get_box_details_api(request, box_code):
-    from inventory.models import Box  # Import Box model
+    from inventory.models import Box  # Import model Box din aplicația inventory
     try:
         box = Box.objects.get(code=box_code)
         box_data = {
@@ -143,3 +140,23 @@ def get_box_details_api(request, box_code):
         return JsonResponse({'box': box_data})
     except Box.DoesNotExist:
         return JsonResponse({'error': 'Box not found'}, status=404)
+
+# Noua API view pentru logout (revocare token)
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
+from apps.accounts.models import RevokedToken  # Import modelul din apps.accounts
+
+class CustomLogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        refresh_token = request.data.get("refresh")
+        if not refresh_token:
+            return Response({"error": "Token lipsă"}, status=400)
+        try:
+            token = RefreshToken(refresh_token)  # Validare opțională
+            RevokedToken.objects.create(token=refresh_token)
+            return Response({"message": "Logout reușit"}, status=200)
+        except Exception as e:
+            return Response({"error": "Token invalid sau eroare"}, status=400)
