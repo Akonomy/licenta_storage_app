@@ -93,6 +93,7 @@ class Box(models.Model):
         ('sold', 'Sold'),
         ('in_stoc', 'In Stoc'),
     ]
+    
 
     code = models.CharField(max_length=3, unique=True, blank=True)  # Cod unic de 3 caractere
     name = models.CharField(max_length=100)  # Numele cutiei
