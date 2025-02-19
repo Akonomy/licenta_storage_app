@@ -13,7 +13,7 @@ class CustomUser(AbstractUser):
     # Pentru utilizatorii obișnuiți, se setează un rol; pentru master, acest câmp poate fi lăsat nul
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, blank=True, null=True)
     
-    def has_page_access(self, page_permission):
+    def has_page_access(self, *page_permission):
         # Dacă este master sau superuser, acordă acces complet
         if self.is_master or self.is_superuser:
             return True

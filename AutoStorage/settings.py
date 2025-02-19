@@ -92,7 +92,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [os.path.join(BASE_DIR, 'templates')],  # Template-uri globale, aflate în afara aplicațiilor
-        'APP_DIRS': False,  # Nu se mai caută template-uri în directoarele aplicațiilor
+        'APP_DIRS': True,  # Nu se mai caută template-uri în directoarele aplicațiilor
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',

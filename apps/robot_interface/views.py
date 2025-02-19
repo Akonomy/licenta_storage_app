@@ -15,19 +15,19 @@ def inventory_home(request):
     return render(request, 'robot_interface/robot_interface_home.html')
 
 @login_required
-@user_passes_test(lambda u: u.is_master() or u.is_admin())
+@user_passes_test(lambda u: u.has_page_access('robot'))
 def task_queue(request):
     tasks = Task.objects.filter(status='pending').order_by('created_at')
     return render(request, 'robot_interface/task_queue.html', {'tasks': tasks})
 
 @login_required
-@user_passes_test(lambda u: u.is_master() or u.is_admin())
+@user_passes_test(lambda u: u.has_page_access('robot'))
 def robot_messages(request):
     status = RobotStatus.objects.last()
     return render(request, 'robot_interface/robot_messages.html', {'status': status})
 
 @login_required
-@user_passes_test(lambda u: u.is_master())
+@user_passes_test(lambda u: u.has_page_access('robot'))
 def control_panel(request):
     if request.method == 'POST':
         form = TaskForm(request.POST)
