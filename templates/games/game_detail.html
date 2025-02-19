@@ -1,0 +1,43 @@
+{% extends 'games/base_game.html' %}
+
+{% block title %}Your Guess{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center">Make a Guess</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} text-center">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <p class="text-center attempts">Remaining Attempts: <strong>{{ remaining_attempts }}</strong></p>
+
+    {% if last_guess %}
+        <p class="text-center last-guess">Your Last Guess: <strong>{{ last_guess }}</strong></p>
+    {% endif %}
+
+    <form method="post" class="guess-form mx-auto">
+        {% csrf_token %}
+        <div class="form-group">
+            <!-- Label for mobile-friendly text above the input -->
+            <label for="guess-input" class="form-label">
+                Guess a number between 1 and {{ game.number_range }}
+            </label>
+            <input type="number" class="form-control" id="guess-input" name="guess" min="1" max="{{ game.number_range }}" placeholder="Enter a number between 1 and {{ game.number_range }}" required>
+        </div>
+        <input type="submit" value="Submit Guess" class="btn btn-primary btn-block mt-3">
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_head %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('guess-input').focus();
+        });
+    </script>
+{% endblock %}

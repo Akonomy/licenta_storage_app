@@ -1,0 +1,142 @@
+/* Dark Blue Theme */
+:root {
+    --background-color-dark: #1b263b;
+    --background-color-light: #f0f8ff;
+    --text-color-dark: #ffffff;
+    --text-color-light: #1b263b;
+    --container-dark: #243447;
+    --accent-color: #1f4e79;
+    --button-hover: #174366;
+}
+
+body {
+    background-color: var(--background-color-dark);
+    font-family: 'Arial', sans-serif;
+    color: var(--text-color-dark);
+    margin: 0;
+    padding: 0;
+}
+
+/* Navbar Styling */
+.navbar {
+    background-color: var(--accent-color);
+}
+.navbar .nav-link {
+    color: var(--text-color-dark);
+}
+.navbar .nav-link:hover {
+    color: var(--button-hover);
+}
+
+header {
+    background-color: var(--accent-color);
+    text-align: center;
+    padding: 20px 0;
+}
+header h1 {
+    margin: 0;
+    font-size: 2.5rem;
+    color: var(--text-color-dark);
+    text-transform: uppercase;
+}
+
+main {
+    padding: 20px;
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: var(--container-dark);
+    border-radius: 10px;
+    padding: 30px;
+    color: var(--text-color-dark);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+h2 {
+    font-size: 1.75rem;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.btn {
+    display: block;
+    width: 100%;
+    background-color: var(--accent-color);
+    color: var(--text-color-dark);
+    border: none;
+    padding: 15px;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin-top: 20px;
+    border-radius: 5px;
+}
+.btn:hover {
+    background-color: var(--button-hover);
+}
+
+.message {
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+.message.success {
+    background-color: #d4edda;
+}
+.message.error {
+    background-color: #f8d7da;
+}
+.message.info {
+    background-color: #073942;
+    color: #fff;
+}
+
+footer {
+    background-color: var(--accent-color);
+    text-align: center;
+    padding: 10px 0;
+    color: var(--text-color-dark);
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+footer p {
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+input[type="number"] {
+    width: calc(100% - 20px);
+    padding: 10px;
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    border: 1px solid var(--text-color-light);
+}
+
+.attempts {
+    font-size: 1.1rem;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+@media (max-width: 576px) {
+    h1 {
+        font-size: 2rem;
+    }
+    h2 {
+        font-size: 1.5rem;
+    }
+    input[type="number"] {
+        font-size: 1rem;
+    }
+    .btn {
+        font-size: 1rem;
+    }
+    .attempts {
+        font-size: 1rem;
+    }
+}

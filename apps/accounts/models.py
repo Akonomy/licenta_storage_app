@@ -10,15 +10,17 @@ class CustomUser(AbstractUser):
         ('robot', 'Robot'),
         ('admin', 'Admin'),
     )
-    # Pentru utilizatorii obișnuiți, se setează un rol; pentru master, acest câmp poate fi lăsat nul
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, blank=True, null=True)
+    coins = models.IntegerField(default=0)  
     
-    def has_page_access(self, *page_permission):
-        # Dacă este master sau superuser, acordă acces complet
+    def has_page_access(self, *page_permissions):
+        """
+        Returnează True dacă utilizatorul este master, superuser,
+        sau dacă rolul utilizatorului se regăsește printre page_permissions.
+        """
         if self.is_master or self.is_superuser:
             return True
-        return self.role == page_permission
-
+        return self.role in page_permissions
 
 
 

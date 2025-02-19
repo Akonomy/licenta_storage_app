@@ -1,0 +1,23 @@
+{% extends 'games/base_game.html' %}
+
+{% block title %}Game Over{% endblock %}
+
+{% block content %}
+    <h2>Game Over</h2>
+
+    {% if game.guessed_correctly %}
+        <div class="message success">
+            <p>Congratulations! You guessed the correct number: {{ game.target_number }}</p>
+        </div>
+    {% else %}
+        <div class="message error">
+            <p>You've used all your attempts.</p>
+            <p>The correct number was: {{ game.target_number }}</p>
+        </div>
+    {% endif %}
+
+    <form method="post" action="{% url 'start_game' %}">
+        {% csrf_token %}
+        <input type="submit" value="Play Again" class="btn">
+    </form>
+{% endblock %}

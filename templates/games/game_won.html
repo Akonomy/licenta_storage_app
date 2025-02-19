@@ -1,0 +1,24 @@
+<h1>Congratulations! You Won the Game!</h1>
+
+<p>You have earned coins based on the following:</p>
+
+<table>
+    <tr>
+        <td>Base Coins:</td>
+        <td>{{ base_coins }}</td>
+    </tr>
+    <tr>
+        <td>Bonus for Remaining Attempts:</td>
+        <td>{{ remaining_attempts_bonus }}</td>
+    </tr>
+    <tr>
+        <td>Difficulty Bonus:</td>
+        <td>{{ difficulty_bonus }}</td>
+    </tr>
+    <tr>
+        <td><strong>Total Coins Earned:</strong></td>
+        <td><strong>{{ total_coins }}</strong></td>
+    </tr>
+</table>
+
+<a href="{% url 'start_game' %}">Start a New Game</a>
