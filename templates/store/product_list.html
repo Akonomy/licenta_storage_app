@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+<!-- Link to the CSS file -->
+<link rel="stylesheet" href="{% static 'store/css/style.css' %}">
+
+<ul class="product-grid">
+    {% for box in boxes %}
+    <li class="product-item">
+        <a href="{% url 'product_detail' box.id %}">
+            <img src="{{ box.image.url }}" alt="{{ box.code }}" width="200">
+            <h2>{{ box.code }} - {{ box.color }}</h2>
+        </a>
+        <p>Price: ${{ box.price }}</p>
+        <p>{{ box.name }}</p>
+        <form action="{% url 'add_to_cart' box.id %}" method="post">
+            {% csrf_token %}
+            <button type="submit">Add to Cart</button>
+        </form>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}

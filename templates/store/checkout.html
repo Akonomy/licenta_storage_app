@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Checkout</h1>
+<form method="post">
+    {% csrf_token %}
+    <!-- Add fields for shipping address, payment details, etc. -->
+    <button type="submit">Place Order</button>
+</form>
+{% endblock %}

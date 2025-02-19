@@ -22,6 +22,9 @@ urlpatterns = [
     path('account/', include('apps.accounts.urls')),  # aplicația principală
     path('inventory/', include('apps.inventory.urls')),
     path('robot/', include('apps.robot_interface.urls')),
+    path('games/', include('apps.games.urls')),
+    path('store/', include('apps.store.urls')),
+    
 ]
 
 

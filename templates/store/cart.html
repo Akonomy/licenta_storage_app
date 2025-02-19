@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .cart-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    h1 {
+        text-align: center;
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+        background-color: #f8f8f8;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    table th, table td {
+        padding: 15px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    table th {
+        background-color: #f2f2f2;
+        font-size: 16px;
+        font-weight: 600;
+        color: #555;
+    }
+
+    table td {
+        font-size: 15px;
+        color: #333;
+    }
+
+    .cart-actions button {
+        background-color: #dc3545;
+        color: white;
+        padding: 8px 12px;
+        font-size: 14px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .cart-actions button:hover {
+        background-color: #c82333;
+    }
+
+    .checkout-btn {
+        display: inline-block;
+        background-color: #28a745;
+        color: white;
+        padding: 12px 20px;
+        font-size: 16px;
+        text-align: center;
+        border-radius: 4px;
+        text-decoration: none;
+        transition: background-color 0.3s;
+        cursor: pointer;
+    }
+
+    .checkout-btn:hover {
+        background-color: #218838;
+    }
+
+    .total-price {
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 20px;
+        text-align: right;
+    }
+
+    .empty-cart-message {
+        text-align: center;
+        font-size: 18px;
+        margin-top: 30px;
+        color: #777;
+    }
+</style>
+
+<div class="cart-container">
+    <h1>Your Cart</h1>
+
+    {% if cart_items %}
+    <table>
+        <tr>
+            <th>Box</th>
+            <th>Price</th>
+            <th>Name</th>
+            
+           
+            <th>Actions</th>
+        </tr>
+        {% for item in cart_items %}
+        <tr>
+            <td>{{ item.box.code }}</td>
+            <td>${{ item.price }}</td>
+            <td>{{item.box.name }}</td>
+            
+           
+            <td class="cart-actions">
+                <form action="{% url 'remove_from_cart' item.box.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit">Remove</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <p class="total-price">Total Price: ${{ total_price }}</p>
+
+    <a href="{% url 'checkout' %}" class="checkout-btn">Proceed to Checkout</a>
+    {% else %}
+    <p class="empty-cart-message">Your cart is empty.</p>
+    {% endif %}
+</div>
+{% endblock %}
