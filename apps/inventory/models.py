@@ -111,7 +111,7 @@ class Box(models.Model):
     def save(self, *args, **kwargs):
         if not self.code:
             # Generează un cod unic de 3 caractere. Atenție: pentru producție se poate dori o metodă mai robustă.
-            self.code = str(uuid.uuid4()).split('-')[0][:3].upper()
+            self.code = str(uuid.uuid4()).split('-')[0][:6].upper()
         super().save(*args, **kwargs)
 
     def remove_from_section(self):

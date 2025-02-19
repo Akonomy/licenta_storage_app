@@ -7,6 +7,34 @@ from django.contrib import messages  # For flash messages
 from .models import Order, OrderItem
 from apps.robot_interface.models import Task  # Import Task model
 
+
+
+
+def box_search(request):
+    if request.method == 'POST':
+        box_id = request.POST.get('box_id')
+        # Se poate adăuga validare suplimentară (ex. dacă box_id este numeric)
+        return redirect('box_detail', box_id=box_id)
+    return render(request, 'store/box_search.html')
+
+
+
+def box_detail(request, box_code):
+    # Caută cutia după cod, nu după id
+    box = get_object_or_404(Box, code=box_code)
+   
+    # Dacă ai un model Order sau OrderItem, poți căuta istoricul cutiei.
+    order_history = OrderItem.objects.filter(box=box)  # Exemplu: toate comenzile în care a fost inclusă cutia
+
+    context = {
+        'box': box,
+        'order_history': order_history,
+    }
+    return render(request, 'store/box_detail.html', context)
+
+
+
+
 def product_list(request):
     boxes = Box.objects.filter(section__tip_sectie='depozit')
     return render(request, 'store/product_list.html', {'boxes': boxes})
@@ -66,6 +94,7 @@ def cart_view(request):
         request.session['cart'] = updated_cart
 
     return render(request, 'store/cart.html', {'cart_items': cart_items, 'total_price': total_price})
+
 
 
 

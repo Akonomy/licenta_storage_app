@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>Detalii pentru Cutia {{ box.code }}</h1>
+  <ul>
+    <li><strong>Nume:</strong> {{ box.name }}</li>
+    <li><strong>Culoare:</strong> {{ box.get_color_display }}</li>
+    <li><strong>Preț:</strong> {{ box.price }}</li>
+    <li><strong>Stare:</strong> {{ box.status }}</li>
+    <li><strong>Secțiune curentă:</strong> {{ box.section.nume_custom }} ({{ box.section.get_tip_sectie_display }})</li>
+  </ul>
+
+  <h2>Istoric vânzări / tranzacții</h2>
+  {% if order_history %}
+    <ul>
+      {% for item in order_history %}
+        <li>
+          Vândut la: {{ item.order.created_at }} – Detalii: {{ item.order }} <!-- adaptează după modelul tău -->
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>Nu există istoric de vânzări pentru această cutie.</p>
+  {% endif %}
+{% endblock %}
+
+

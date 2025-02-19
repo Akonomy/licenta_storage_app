@@ -1,0 +1,184 @@
+/* Hero Section Styles */
+/* Hero Section Styles */
+.hero-section {
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/static/home/images/warehous.png') no-repeat center center;
+    background-size: cover;  /* Ensure the image covers the full area */
+    width: vw;  /* Set to 100% of the viewport width */
+    height: -1vh;  /* Adjust height to be less than full screen */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    text-align: center;
+    padding: 0 15px;
+    position: relative;
+    overflow: hidden;  /* Prevents overflow issues */
+}
+
+/* Hero Section Text Styling */
+.hero-section h1 {
+    font-size: 3rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.hero-section p {
+    font-size: 1.25rem;
+    margin-top: 15px;
+}
+
+.hero-section .btn {
+    font-size: 1.2rem;
+    padding: 10px 30px;
+}
+
+/* Responsive Tweaks for Smaller Screens */
+@media (max-width: 768px) {
+    .hero-section h1 {
+        font-size: 2.5rem;
+    }
+
+    .hero-section p {
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .hero-section {
+        height: 50vh;  /* Reduce height on smaller screens */
+    }
+
+    .hero-section h1 {
+        font-size: 2rem;
+    }
+
+    .hero-section p {
+        font-size: 1rem;
+    }
+}
+
+
+.hero-section .btn {
+    font-size: 1.2rem;
+    padding: 8px 25px; /* Adjusted for a better look on phones */
+}
+
+/* Feature Boxes */
+.feature-box {
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-box:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+}
+
+.feature-icon i {
+    font-size: 3rem;
+    color: #007bff;
+    margin-bottom: 15px;
+}
+
+/* Security Boxes */
+.security-box {
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.security-box:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+}
+
+.security-box i {
+    font-size: 3rem;
+    color: #28a745;
+    margin-bottom: 15px;
+}
+
+/* Call to Action Section */
+.cta-section {
+    background-color: #343a40;
+    padding: 40px 15px; /* Reduced padding for better responsiveness */
+    color: #ffffff;
+    text-align: center;
+}
+
+.cta-section h2 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+}
+
+.cta-section p {
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+}
+
+.cta-section .btn {
+    font-size: 1.2rem;
+    padding: 12px 30px;
+    margin: 10px;
+}
+
+/* Responsive Tweaks */
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 0 10px; /* Reduce padding for smaller screens */
+        min-height: 50vh; /* Adjusted height for smaller screens */
+    }
+
+    .hero-section h1 {
+        font-size: 2rem; /* Adjusted for phones */
+    }
+
+    .hero-section p {
+        font-size: 1rem; /* Reduced for phones */
+    }
+
+    .cta-section h2 {
+        font-size: 2rem; /* Adjusted for smaller screens */
+    }
+
+    .cta-section p {
+        font-size: 1rem; /* Reduced font size for smaller screens */
+    }
+    
+    .feature-icon i, .security-box i {
+        font-size: 2.5rem; /* Adjust icon size for phones */
+    }
+}
+
+@media (max-width: 576px) {
+    .hero-section h1 {
+        font-size: 1.75rem; /* Even smaller for extra small screens */
+    }
+
+    .hero-section p {
+        font-size: 0.95rem; /* Smaller paragraph for phones */
+    }
+
+    .cta-section h2 {
+        font-size: 1.75rem; /* Adjusted for extra small screens */
+    }
+
+    .cta-section p {
+        font-size: 0.95rem; /* Adjusted for extra small screens */
+    }
+    
+    .feature-box, .security-box {
+        padding: 20px;
+    }
+}
+
+/* Global */
+.feature-box, .security-box {
+    padding: 30px;
+    margin-bottom: 30px;
+}

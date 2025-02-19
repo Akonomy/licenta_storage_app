@@ -8,7 +8,7 @@
         justify-content: space-between;
         padding: 20px;
         max-width: 900px;
-        margin: 0 auto;
+        margin: 20px auto;
         border: 1px solid #ddd;
         border-radius: 8px;
         background-color: #f8f8f8;
@@ -33,15 +33,21 @@
     }
 
     .product-detail-info h1 {
-        font-size: 24px;
+        font-size: 32px;
         margin-bottom: 20px;
         color: #333;
     }
 
     .product-detail-info p {
-        font-size: 18px;
+        font-size: 24px;
         color: #555;
         margin-bottom: 15px;
+    }
+
+    .product-detail-info .price {
+        font-size: 28px;
+        font-weight: bold;
+        color: #e74c3c;
     }
 
     .product-detail-info form {
@@ -52,7 +58,7 @@
         background-color: #28a745;
         color: white;
         padding: 12px 20px;
-        font-size: 16px;
+        font-size: 18px;
         border: none;
         border-radius: 4px;
         cursor: pointer;
@@ -66,16 +72,16 @@
 
 <div class="product-detail-container">
     <div class="product-detail-image">
-        <img src="{{ box.image.url }}" alt="{{ box.code }}">
+        <img src="{{ box.image.url }}">
     </div>
     <div class="product-detail-info">
-        <h1>{{ box.code }} - {{ box.color }}</h1>
-        <p><strong>Price:</strong> ${{ box.price }}</p>
-        <p><strong>Section:</strong> {{ box.section.name }}</p>
-        <p><strong>Name:</strong> {{ box.name }}</p>
+        <h1>{{ box.name }}</h1>
+        <p><strong>Culoare:</strong> {{ box.get_color_display }}</p>
+        <p class="price"><strong>Preț:</strong> ${{ box.price }}</p>
+        <p><strong>Descriere:</strong> pachet</p>
         <form action="{% url 'add_to_cart' box.id %}" method="post">
             {% csrf_token %}
-            <button type="submit">Add to Cart</button>
+            <button type="submit">Adaugă în coș</button>
         </form>
     </div>
 </div>

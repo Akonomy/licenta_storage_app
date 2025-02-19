@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>Caută o cutie</h1>
+  <form method="post">
+    {% csrf_token %}
+    <label for="box_id">ID Cutie:</label>
+    <input type="text" name="box_id" id="box_id" required>
+    <button type="submit">Caută</button>
+  </form>
+{% endblock %}
