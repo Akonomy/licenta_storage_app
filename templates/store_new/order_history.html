@@ -1,0 +1,33 @@
+{% extends 'store_new/base.html' %}
+{% block title %}Istoric Comenzi{% endblock %}
+{% block content %}
+<h1>Istoric Comenzi</h1>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>ID Comandă</th>
+            <th>Data</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Acțiuni</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for order in orders %}
+        <tr>
+            <td>{{ order.id }}</td>
+            <td>{{ order.ordered_date|date:"d M Y H:i" }}</td>
+            <td>{{ order.total_amount }} lei</td>
+            <td>{{ order.get_status_display }}</td>
+            <td>
+                <a href="{% url 'store_new:order_detail' order_id=order.id %}" class="btn btn-primary">Vezi detalii</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5">Nu ai comenzi efectuate.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

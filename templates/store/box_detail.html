@@ -1,26 +1,73 @@
-{% extends "base.html" %}
+{% extends 'store_new/base.html' %}
+{% load static %}
+{% block title %}Detalii Cutie{% endblock %}
 {% block content %}
-  <h1>Detalii pentru Cutia {{ box.code }}</h1>
-  <ul>
-    <li><strong>Nume:</strong> {{ box.name }}</li>
-    <li><strong>Culoare:</strong> {{ box.get_color_display }}</li>
-    <li><strong>Preț:</strong> {{ box.price }}</li>
-    <li><strong>Stare:</strong> {{ box.status }}</li>
-    <li><strong>Secțiune curentă:</strong> {{ box.section.nume_custom }} ({{ box.section.get_tip_sectie_display }})</li>
-  </ul>
+<h1>Detalii Cutie</h1>
+<table class="table table-bordered">
+    <tr>
+        <th>Cod Cutie</th>
+        <td>{{ box.code }}</td>
+    </tr>
+    <tr>
+        <th>Nume</th>
+        <td>{{ box.name }}</td>
+    </tr>
+    <tr>
+        <th>Culoare</th>
+        <td>{{ box.get_color_display }}</td>
+    </tr>
+    <tr>
+        <th>Status</th>
+        <td>
+            {% if box.status == "in_stoc" %}
+                În stoc
+            {% elif box.status == "sold" %}
+                Vândută
+            {% else %}
+                {{ box.status }}
+            {% endif %}
+        </td>
+    </tr>
+    <tr>
+        <th>Preț</th>
+        <td>{{ box.price }} lei</td>
+    </tr>
+    <tr>
+        <th>Secțiune</th>
+        <td>
+            {% if box.section %}
+                {{ box.section.nume_custom }} ({{ box.section.get_tip_sectie_display }})
+            {% else %}
+                N/A
+            {% endif %}
+        </td>
+    </tr>
+    <tr>
+        <th>Imagine</th>
+        <td>
+            {% if box.image %}
+                <img src="{{ box.image.url }}" alt="{{ box.name }}" style="max-width:200px;">
+            {% else %}
+                Fără imagine
+            {% endif %}
+        </td>
+    </tr>
+</table>
 
-  <h2>Istoric vânzări / tranzacții</h2>
-  {% if order_history %}
+<h2>Comenzi asociate acestei cutii</h2>
+{% if order_history %}
     <ul>
-      {% for item in order_history %}
-        <li>
-          Vândut la: {{ item.order.created_at }} – Detalii: {{ item.order }} <!-- adaptează după modelul tău -->
-        </li>
-      {% endfor %}
+        {% for order in order_history %}
+            <li>
+                Comanda #{{ order.id }} - Status: {{ order.get_status_display }} - Data: {{ order.ordered_date|date:"d M Y H:i" }}
+                <!-- Link către detaliile complete ale comenzii asociate -->
+                <a href="{% url 'store_new:order_associated_detail' order_id=order.id %}">Vezi detalii comandă</a>
+            </li>
+        {% endfor %}
     </ul>
-  {% else %}
-    <p>Nu există istoric de vânzări pentru această cutie.</p>
-  {% endif %}
+{% else %}
+    <p>Nu există comenzi asociate acestei cutii.</p>
+{% endif %}
+
+<a href="{% url 'store_new:box_search' %}" class="btn btn-secondary">Caută altă cutie</a>
 {% endblock %}
-
-

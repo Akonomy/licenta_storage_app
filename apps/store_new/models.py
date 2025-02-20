@@ -156,3 +156,25 @@ class OrderItem(models.Model):
 
     def get_total_price(self):
         return self.quantity * self.product_price
+
+
+
+
+class BoxQueue(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='box_queue')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Coada de așteptare pentru cutii - Comanda {self.order.id} plasată la {self.created_at}"
+
+        
+
+class DeliveryQueue(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    box = models.ForeignKey(Box, on_delete=models.CASCADE)
+    region_code = models.IntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"DeliveryQueue - Order {self.order.id} (Box {self.box.id}) pentru regiunea {self.region_code}"
+

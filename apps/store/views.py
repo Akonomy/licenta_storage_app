@@ -12,26 +12,26 @@ from apps.robot_interface.models import Task  # Import Task model
 
 def box_search(request):
     if request.method == 'POST':
-        box_id = request.POST.get('box_id')
-        # Se poate adăuga validare suplimentară (ex. dacă box_id este numeric)
-        return redirect('box_detail', box_id=box_id)
-    return render(request, 'store/box_search.html')
-
+        box_code = request.POST.get('box_id')
+        if not box_code:
+            messages.error(request, "Te rog introdu un cod de cutie valid.")
+            return redirect('store_new:box_search')
+        # Redirecționăm către view-ul de detaliere, folosind parametrul 'box_code'
+        return redirect('store_new:box_detail', box_code=box_code)
+    return render(request, 'store_new/box_search.html')
 
 
 def box_detail(request, box_code):
-    # Caută cutia după cod, nu după id
+    # Căutăm cutia după cod (nu după id)
     box = get_object_or_404(Box, code=box_code)
-   
-    # Dacă ai un model Order sau OrderItem, poți căuta istoricul cutiei.
-    order_history = OrderItem.objects.filter(box=box)  # Exemplu: toate comenzile în care a fost inclusă cutia
-
+    # Obținem istoricul comenzilor în care cutia a fost alocată
+    order_history = Order.objects.filter(package_box=box)
+    
     context = {
         'box': box,
         'order_history': order_history,
     }
-    return render(request, 'store/box_detail.html', context)
-
+    return render(request, 'store_new/box_detail.html', context)
 
 
 

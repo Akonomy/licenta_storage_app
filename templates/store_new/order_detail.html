@@ -16,7 +16,14 @@
         <th>Adresă de livrare</th>
         <td>{{ order.county }}, {{ order.street }}{% if order.commune %}, {{ order.commune }}{% endif %}</td>
     </tr>
+    <tr>
+        <th>Tip Colet</th>
+        <td>{% if box %}{{ box.name }}{% else %}Nealocat{% endif %}</td>
+    </tr>
 </table>
+
+<!-- Link către istoricul comenzilor -->
+
 
 <h2>Produse comandate:</h2>
 <table class="table table-bordered">
@@ -39,6 +46,8 @@
         {% endfor %}
     </tbody>
 </table>
+
+<a href="{% url 'store_new:order_history' %}" class="btn btn-info">Istoric Comenzi</a>
 
 {% if order.status in "pending waiting" %}
     <a href="{% url 'store_new:cancel_order' order_id=order.id %}" class="btn btn-danger">Anulează Comanda</a>

@@ -8,6 +8,14 @@ urlpatterns = [
     # Lista de produse (grid, 12 pe pagină)
     path('', views.product_list, name='product_list'),
 
+
+
+
+   
+    path('search/', views.box_search, name='box_search'),
+
+
+
     # Detalii produs (clic pe imagine sau titlu)
     path('product/<int:product_id>/', views.product_detail, name='product_detail'),
 
@@ -29,6 +37,8 @@ urlpatterns = [
     # Detalii comandă
     path('order/<int:order_id>/', views.order_detail, name='order_detail'),
 
+    path('orderhistory/', views.order_history, name='order_history'),
+
     # Anulare comandă (doar dacă statusul este 'pending' sau 'waiting')
     path('order/<int:order_id>/cancel/', views.cancel_order, name='cancel_order'),
 
@@ -37,4 +47,27 @@ urlpatterns = [
 
     # Adăugare manuală de produse (numai pentru admin sau utilizatori master)
     path('add-product/', views.add_product, name='add_product'),
+
+
+
+
+
+
+
+
+
+
+
+
+
+     path('<str:box_code>/', views.box_detail, name='box_detail'),
+
+
+   
+
+
+
+
+
+
 ]

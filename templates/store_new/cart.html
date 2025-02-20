@@ -35,8 +35,11 @@
         <p class="font-weight-bold">Total: {{ total }} lei</p>
         <button type="submit" class="btn btn-primary">Actualizează Coșul</button>
         <a href="{% url 'store_new:checkout' %}" class="btn btn-success">Finalizează Comanda</a>
+
+        <a href="{% url 'store_new:order_history' %}" class="btn btn-info">Istoric Comenzi</a>
     </form>
 {% else %}
     <p>Coșul este gol.</p>
+    <a href="{% url 'store_new:order_history' %}" class="btn btn-info">Istoric Comenzi</a>
 {% endif %}
 {% endblock %}
