@@ -31,7 +31,9 @@ urlpatterns = [
     path('inventory/', include('apps.inventory.urls')),
     path('robot/', include('apps.robot_interface.urls')),
     path('games/', include('apps.games.urls')),
-    path('store/', include('apps.store.urls')),
+    path('storeold/', include('apps.store.urls')),
+    path('store/', include('apps.store_new.urls', namespace='store_new')),
+
     
 ]
 

@@ -1,0 +1,36 @@
+{% extends "store_new/base.html" %}
+{% block title %}Produse{% endblock %}
+{% block content %}
+<h2>Produse</h2>
+
+<div class="search-sort">
+  <form method="get" action="{% url 'store_new:product_list' %}">
+    <input type="text" name="search" placeholder="Caută produs..." value="{{ request.GET.search }}">
+    <select name="sort">
+      <option value="">Ordonează</option>
+      <option value="price">După preț</option>
+      <option value="name">După nume</option>
+    </select>
+    <button type="submit">Caută</button>
+  </form>
+</div>
+
+<div class="product-grid">
+  {% for product in products %}
+  <div class="product-item">
+    <div class="product-image" style="background-image: url('{{ product.main_image|default:"https://via.placeholder.com/300x200" }}');"></div>
+    <div class="product-name">{{ product.title }}</div>
+    <div class="product-price">{{ product.price }} lei</div>
+    <button class="add-to-cart" onclick="location.href='{% url 'store_new:add_to_cart' product.id %}'">Adaugă în coș</button>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="pagination">
+  {% if prev_page %}
+    <a href="?page={{ prev_page }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">Anterior</a>
+  {% endif %}
+  <span>Pagina {{ page }}</span>
+  <a href="?page={{ next_page }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">Următoarea</a>
+</div>
+{% endblock %}

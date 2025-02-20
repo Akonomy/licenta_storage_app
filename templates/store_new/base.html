@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}My Store{% endblock %}</title>
+  {%load static%}
+  <link rel="stylesheet" href="{% static 'store_new/css/styles.css' %}">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header>
+    <div class="container header-container">
+      <h1 class="logo"><a href="{% url 'store_new:product_list' %}">My Store</a></h1>
+      <nav>
+        <ul>
+          <li><a href="{% url 'store_new:product_list' %}">Produse</a></li>
+          <li><a href="{% url 'store_new:order_detail' order_id=1 %}">Comenzi</a></li>
+          <!-- alte linkuri după necesitate -->
+        </ul>
+      </nav>
+      <div class="cart-icon">
+        <a href="{% url 'store_new:cart_view' %}">
+          <img src="https://via.placeholder.com/30" alt="Cart">
+          <span class="badge">{{ request.session.cart|length|default:"0" }}</span>
+        </a>
+      </div>
+    </div>
+  </header>
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+  <footer>
+    <div class="container">
+      <p>&copy; 2025 My Store. All rights reserved.</p>
+    </div>
+  </footer>
+</body>
+</html>

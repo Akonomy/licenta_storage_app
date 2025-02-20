@@ -1,0 +1,39 @@
+{% extends "store_new/base.html" %}
+{% load cart_extras %}
+{% block title %}Coșul meu{% endblock %}
+{% block content %}
+<h2>Coșul meu</h2>
+
+{% if request.user.is_authenticated %}
+  <p>Banii disponibili: <strong>{{ request.user.coins }} lei</strong></p>
+{% endif %}
+
+{% if cart_items %}
+<table class="cart-table">
+  <thead>
+    <tr>
+      <th>Produs</th>
+      <th>Cantitate</th>
+      <th>Preț</th>
+      <th>Total</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in cart_items %}
+    <tr>
+      <td>{{ item.title }}</td>
+      <td>{{ item.quantity }}</td>
+      <td>{{ item.price }} lei</td>
+      <td>{{ item.quantity|multiply:item.price }} lei</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<div class="cart-total">
+  <strong>Total: {{ total }} lei</strong>
+</div>
+<a href="{% url 'store_new:checkout' %}" class="btn-checkout">Finalizează Comanda</a>
+{% else %}
+<p>Coșul este gol.</p>
+{% endif %}
+{% endblock %}
