@@ -9,6 +9,7 @@ class GuessNumberGame(models.Model):
     current_attempts = models.IntegerField(default=0)  # Attempts so far
     number_range = models.IntegerField(default=50)  # Range of the random number (1 to this number)
     guessed_correctly = models.BooleanField(default=False)  # Whether the number has been guessed
+    reward_given = models.BooleanField(default=False)  # nou câmp
 
     def check_guess(self, guess):
         """Return whether the guess is correct, greater, or lesser"""

@@ -38,7 +38,7 @@ def start_game(request):
             number_range=number_range,
             max_attempts=max_attempts
         )
-        return redirect('game_detail', game_id=game.id)
+        return redirect('games:game_detail', game_id=game.id)
 
     return render(request, 'games/start_game.html')
 
@@ -62,10 +62,10 @@ def game_detail(request, game_id):
 
         if game.is_game_over():
             if game.guessed_correctly:
-                return redirect('game_won', game_id=game.id)  # Redirect to the win page
+                return redirect('games:game_won', game_id=game.id)  # Redirect to the win page
             else:
                 messages.error(request, 'You lost the game. Maximum attempts reached.')
-                return redirect('game_over', game_id=game.id)
+                return redirect('games:game_over', game_id=game.id)
 
     # Calculate remaining attempts
     remaining_attempts = game.max_attempts - game.current_attempts
@@ -81,26 +81,33 @@ def game_detail(request, game_id):
 def game_won(request, game_id):
     game = get_object_or_404(GuessNumberGame, id=game_id, user=request.user)
     
+    # Dacă recompensa a fost deja acordată, nu o mai acorda din nou
+    if game.reward_given:
+        messages.info(request, "Recompensa a fost deja acordată.")
+        return render(request, 'games/game_won.html', {})
+
     # Base reward
     base_coins = 15
     
-    # Bonus for remaining attempts
+    # Bonus pentru încercări rămase
     remaining_attempts = game.max_attempts - game.current_attempts
     remaining_attempts_bonus = remaining_attempts * random.randint(1, 5)
     
-    # Difficulty bonus based on range and attempts
-    difficulty_bonus = game.number_range / game.max_attempts / 10
-    difficulty_bonus = round(difficulty_bonus)
+    # Bonus de dificultate
+    difficulty_bonus = round(game.number_range / game.max_attempts / 10)
     
-    # Total coins earned
+    # Total monede
     total_coins = base_coins + remaining_attempts_bonus + difficulty_bonus
     
-    # Update user's coins
+    # Actualizează monedele utilizatorului
     user = request.user
     user.coins += total_coins
     user.save()
 
-    # Pass data to the template
+    # Marchează jocul ca având recompensa acordată
+    game.reward_given = True
+    game.save()
+
     return render(request, 'games/game_won.html', {
         'base_coins': base_coins,
         'remaining_attempts_bonus': remaining_attempts_bonus,

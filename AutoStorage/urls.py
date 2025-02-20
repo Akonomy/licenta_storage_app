@@ -30,7 +30,7 @@ urlpatterns = [
     path('account/', include('apps.accounts.urls')),  # aplicația principală
     path('inventory/', include('apps.inventory.urls')),
     path('robot/', include('apps.robot_interface.urls')),
-    path('games/', include('apps.games.urls')),
+    path('games/', include('apps.games.urls',namespace='games')),
     path('storeold/', include('apps.store.urls')),
     path('store/', include('apps.store_new.urls', namespace='store_new')),
 

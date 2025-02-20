@@ -9,7 +9,7 @@ from apps.robot_interface.models import Task
 
 API_PRODUCTS_URL = "https://api.escuelajs.co/api/v1/products"
 
-def fetch_api_products(page=1, limit=10):
+def fetch_api_products(page=1, limit=12):
     offset = (page - 1) * limit
     params = {'offset': offset, 'limit': limit}
     try:
@@ -22,14 +22,14 @@ def fetch_api_products(page=1, limit=10):
 
 def product_list(request):
     page = int(request.GET.get('page', 1))
-    limit = int(request.GET.get('limit', 10))
+    limit = int(request.GET.get('limit', 12))
     products = fetch_api_products(page, limit)
     if products is not None:
         for p in products:
             if 'images' in p and p['images']:
                 p['main_image'] = p['images'][0]
     else:
-        # Dacă API-ul nu răspunde, folosim produsele adăugate manual
+        # Fallback: folosim produsele adăugate manual
         products = list(Product.objects.all().values())
     context = {
         'products': products,
@@ -63,10 +63,8 @@ def product_detail(request, product_id):
         }
     return render(request, 'store_new/product_detail.html', {'product': product})
 
-
 def add_to_cart(request, product_id):
     cart = request.session.get('cart', {})
-    # Încearcă să preia produsul din API; dacă nu, din baza de date locală
     product = None
     try:
         response = requests.get(f"{API_PRODUCTS_URL}/{product_id}", timeout=5)
@@ -82,13 +80,11 @@ def add_to_cart(request, product_id):
             'price': product_obj.price,
         }
     
-    # Construim dicționarul pentru coș folosind metoda .get() (fără fallback pe atribute)
     if str(product_id) not in cart:
         cart[str(product_id)] = {
             'title': product.get('title') or '',
             'price': product.get('price'),
             'quantity': 1,
-            # Dacă cheia 'id' există în dicționar, considerăm produsul venit din API
             'external': True if product.get('id') is not None else False,
         }
         messages.success(request, 'Produs adăugat în coș.')
@@ -121,6 +117,42 @@ def cart_view(request):
     return render(request, 'store_new/cart.html', context)
 
 @login_required
+def update_cart(request):
+    """
+    Permite actualizarea cantității produselor din coș sau eliminarea acestora
+    (dacă cantitatea devine 0).
+    Se așteaptă ca input-urile din formular să aibă numele de forma 'quantity_<product_id>'.
+    """
+    if request.method == 'POST':
+        cart = request.session.get('cart', {})
+        for key, value in request.POST.items():
+            if key.startswith('quantity_'):
+                product_id = key.split('_')[1]
+                try:
+                    new_quantity = int(value)
+                    if new_quantity > 0:
+                        cart[product_id]['quantity'] = new_quantity
+                    else:
+                        cart.pop(product_id, None)
+                except ValueError:
+                    continue
+        request.session['cart'] = cart
+        messages.success(request, 'Coșul a fost actualizat.')
+    return redirect('store_new:cart_view')
+
+@login_required
+def remove_from_cart(request, product_id):
+    """
+    Elimină complet un produs din coș.
+    """
+    cart = request.session.get('cart', {})
+    if product_id in cart:
+        del cart[product_id]
+        messages.success(request, 'Produsul a fost eliminat din coș.')
+    request.session['cart'] = cart
+    return redirect('store_new:cart_view')
+
+@login_required
 def checkout(request):
     cart = request.session.get('cart', {})
     if not cart:
@@ -142,27 +174,43 @@ def checkout(request):
         street = request.POST.get('street')
         commune = request.POST.get('commune', '')
 
-        # Determină zona de livrare pe baza județului (exemplu simplificat)
-        delivery_section = None
-        if county in ['Bucuresti', 'Ilfov']:
-            delivery_section = Section.objects.filter(tip_sectie='livrare', nume_custom__icontains='București').first()
-        elif county in ['Cluj', 'Sibiu', 'Brasov']:
-            delivery_section = Section.objects.filter(tip_sectie='livrare', nume_custom__icontains='Transilvania').first()
-        else:
-            delivery_section = Section.objects.filter(tip_sectie='livrare').first()
-
-        # Caută o cutie liberă în secțiunea depozit
-        free_box = Box.objects.filter(section__tip_sectie='depozit', status='in_stoc').first()
-
+        # Creăm comanda preliminară pentru a putea apela metoda get_delivery_region_code
         order = Order.objects.create(
             user=user,
             total_amount=total,
             county=county,
             street=street,
             commune=commune,
-            status='processing' if free_box else 'pending',
-            waiting=False if free_box else True
+            status='pending',  # se poate actualiza mai jos în funcție de disponibilitate
+            waiting=True
         )
+
+        # Folosim metoda din model pentru a determina regiunea
+        region_code = order.get_delivery_region_code()
+
+        # Exemplu: alegem zona de livrare pe baza codului regiunii
+        if region_code == 1:
+            delivery_section = Section.objects.filter(tip_sectie='livrare', nume_custom__icontains='Moldova').first()
+        elif region_code == 2:
+            delivery_section = Section.objects.filter(tip_sectie='livrare', nume_custom__icontains='Transilvania').first()
+        elif region_code == 3:
+            delivery_section = Section.objects.filter(tip_sectie='livrare', nume_custom__icontains='Muntenia').first()
+        # Adaugă și alte condiții după nevoie...
+        else:
+            delivery_section = Section.objects.filter(tip_sectie='livrare').first()
+
+        # Caută o cutie liberă în secțiunea depozit
+        free_box = Box.objects.filter(section__tip_sectie='depozit', status='in_stoc').first()
+
+        # Actualizează statusul comenzii în funcție de disponibilitatea cutiei
+        if free_box:
+            order.status = 'processing'
+            order.waiting = False
+        else:
+            order.status = 'pending'
+            order.waiting = True
+
+        order.save()
 
         # Creează elementele comenzii
         for pid, item in cart.items():
@@ -183,7 +231,6 @@ def checkout(request):
             order.package_box = free_box
             order.save()
             if delivery_section:
-                # Creăm un task pentru mutarea cutiei din depozit în zona de livrare
                 Task.objects.create(
                     task_type='move_box',
                     box=free_box,
@@ -192,7 +239,6 @@ def checkout(request):
                     status='pending',
                     created_by=user
                 )
-                # Actualizăm statusul și secțiunea cutiei
                 free_box.section = delivery_section
                 free_box.status = 'sold'
                 free_box.save()
@@ -207,7 +253,10 @@ def checkout(request):
         messages.success(request, 'Comanda a fost plasată.')
         return redirect('store_new:order_detail', order_id=order.id)
 
+    # Dacă nu este POST, afișăm pagina de checkout
+    total = sum(int(item['price']) * item['quantity'] for item in cart.values())
     return render(request, 'store_new/checkout.html', {'total': total})
+
 
 @login_required
 def order_detail(request, order_id):
@@ -215,7 +264,47 @@ def order_detail(request, order_id):
     items = order.orderitem_set.all()
     return render(request, 'store_new/order_detail.html', {'order': order, 'items': items})
 
-# Vizualizare pentru adăugarea manuală de produse (numai pentru admin sau utilizatori master)
+@login_required
+def cancel_order(request, order_id):
+    """
+    Permite anularea unei comenzi dacă aceasta este încă în stadiile 'pending' sau 'waiting'.
+    """
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    if order.status in ['pending', 'waiting']:
+        order.status = 'canceled'
+        order.save()
+        messages.success(request, 'Comanda a fost anulată.')
+    else:
+        messages.error(request, 'Comanda nu poate fi anulată în acest stadiu.')
+    return redirect('store_new:order_detail', order_id=order.id)
+
+@login_required
+def update_order_item(request, order_id, item_id):
+    """
+    Permite actualizarea cantității unui produs dintr-o comandă dacă aceasta nu a fost finalizată.
+    Dacă noua cantitate este 0, produsul este eliminat din comandă.
+    """
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    if order.status not in ['pending', 'waiting']:
+        messages.error(request, 'Nu se pot modifica produsele din această comandă.')
+        return redirect('store_new:order_detail', order_id=order.id)
+    order_item = get_object_or_404(OrderItem, id=item_id, order=order)
+    if request.method == 'POST':
+        try:
+            new_quantity = int(request.POST.get('quantity', order_item.quantity))
+            if new_quantity > 0:
+                order_item.quantity = new_quantity
+                order_item.save()
+                messages.success(request, 'Cantitatea a fost actualizată.')
+            else:
+                order_item.delete()
+                messages.success(request, 'Produsul a fost eliminat din comandă.')
+            order.calculate_total()
+        except ValueError:
+            messages.error(request, 'Cantitate invalidă.')
+    return redirect('store_new:order_detail', order_id=order.id)
+
+# Vizualizare pentru adăugarea manuală de produse (doar pentru admin sau utilizatori master)
 @login_required
 def add_product(request):
     if not (request.user.is_staff or request.user.is_superuser or getattr(request.user, 'is_master', False)):
@@ -227,7 +316,6 @@ def add_product(request):
         price = request.POST.get('price')
         description = request.POST.get('description', '')
         main_image = request.POST.get('main_image')
-        # Pentru câmpul secondary_images se poate prelua o listă de URL-uri, de exemplu, separate prin virgulă
         secondary_images_str = request.POST.get('secondary_images', '')
         secondary_images = [url.strip() for url in secondary_images_str.split(',') if url.strip()]
         product = Product(title=title, price=price, description=description, main_image=main_image, secondary_images=secondary_images)

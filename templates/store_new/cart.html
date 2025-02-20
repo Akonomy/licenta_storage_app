@@ -1,39 +1,41 @@
-{% extends "store_new/base.html" %}
-{% load cart_extras %}
-{% block title %}Coșul meu{% endblock %}
+{% extends 'store_new/base.html' %}
+{% block title %}Coș de Cumpărături{% endblock %}
 {% block content %}
-<h2>Coșul meu</h2>
-
-{% if request.user.is_authenticated %}
-  <p>Banii disponibili: <strong>{{ request.user.coins }} lei</strong></p>
-{% endif %}
-
+<h1>Coșul tău</h1>
 {% if cart_items %}
-<table class="cart-table">
-  <thead>
-    <tr>
-      <th>Produs</th>
-      <th>Cantitate</th>
-      <th>Preț</th>
-      <th>Total</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for item in cart_items %}
-    <tr>
-      <td>{{ item.title }}</td>
-      <td>{{ item.quantity }}</td>
-      <td>{{ item.price }} lei</td>
-      <td>{{ item.quantity|multiply:item.price }} lei</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-<div class="cart-total">
-  <strong>Total: {{ total }} lei</strong>
-</div>
-<a href="{% url 'store_new:checkout' %}" class="btn-checkout">Finalizează Comanda</a>
+    <form method="post" action="{% url 'store_new:update_cart' %}">
+        {% csrf_token %}
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Produs</th>
+                    <th>Preț (lei)</th>
+                    <th>Cantitate</th>
+                    <th>Total (lei)</th>
+                    <th>Acțiuni</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart_items %}
+                <tr>
+                    <td>{{ item.title }}</td>
+                    <td>{{ item.price }}</td>
+                    <td>
+                        <input type="number" name="quantity_{{ item.id }}" value="{{ item.quantity }}" min="0" class="form-control" style="width: 80px;">
+                    </td>
+                    <td>{{ item.price|multiply:item.quantity }} lei</td>
+                    <td>
+                        <a href="{% url 'store_new:remove_from_cart' product_id=item.id %}" class="btn btn-danger btn-sm">Elimină</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <p class="font-weight-bold">Total: {{ total }} lei</p>
+        <button type="submit" class="btn btn-primary">Actualizează Coșul</button>
+        <a href="{% url 'store_new:checkout' %}" class="btn btn-success">Finalizează Comanda</a>
+    </form>
 {% else %}
-<p>Coșul este gol.</p>
+    <p>Coșul este gol.</p>
 {% endif %}
 {% endblock %}

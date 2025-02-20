@@ -1,24 +1,74 @@
-<h1>Congratulations! You Won the Game!</h1>
+{% extends "games/base_game.html" %}
+{% block title %}Congratulations!{% endblock %}
+{% block content %}
+<style>
+  .win-container {
+    background: #e0f7fa; /* fundal albastru deschis */
+    border: 2px solid #4fc3f7;
+    border-radius: 10px;
+    padding: 30px;
+    text-align: center;
+    margin: 50px auto;
+    max-width: 600px;
+  }
+  .win-container h1 {
+    color: #0288d1;
+    font-size: 36px;
+    margin-bottom: 20px;
+  }
+  .win-table {
+    width: 100%;
+    margin: 20px 0;
+    border-collapse: collapse;
+  }
+  .win-table td {
+    padding: 10px;
+    font-size: 18px;
+    color: #01579b;
+  }
+  .total-coins {
+    font-size: 48px;
+    font-weight: bold;
+    color: #0277bd;
+    margin: 20px 0;
+  }
+  .new-game-btn {
+    background: #039be5;
+    color: #fff;
+    padding: 15px 30px;
+    font-size: 20px;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background 0.3s;
+  }
+  .new-game-btn:hover {
+    background: #0288d1;
+  }
+</style>
 
-<p>You have earned coins based on the following:</p>
+<div class="win-container">
+  <h1>Congratulations! You Won the Game!</h1>
+  
+  <table class="win-table">
+    <tr>
+      <td>Base Coins:</td>
+      <td>{{ base_coins }}</td>
+    </tr>
+    <tr>
+      <td>Bonus for Remaining Attempts:</td>
+      <td>{{ remaining_attempts_bonus }}</td>
+    </tr>
+    <tr>
+      <td>Difficulty Bonus:</td>
+      <td>{{ difficulty_bonus }}</td>
+    </tr>
+  </table>
 
-<table>
-    <tr>
-        <td>Base Coins:</td>
-        <td>{{ base_coins }}</td>
-    </tr>
-    <tr>
-        <td>Bonus for Remaining Attempts:</td>
-        <td>{{ remaining_attempts_bonus }}</td>
-    </tr>
-    <tr>
-        <td>Difficulty Bonus:</td>
-        <td>{{ difficulty_bonus }}</td>
-    </tr>
-    <tr>
-        <td><strong>Total Coins Earned:</strong></td>
-        <td><strong>{{ total_coins }}</strong></td>
-    </tr>
-</table>
+  <div class="total-coins">
+    {{ total_coins }} Coins!
+  </div>
 
-<a href="{% url 'start_game' %}">Start a New Game</a>
+  <a href="{% url 'games:start_game' %}" class="new-game-btn">Start a New Game</a>
+</div>
+{% endblock %}

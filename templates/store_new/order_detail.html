@@ -1,18 +1,45 @@
-{% extends "store_new/base.html" %}
+{% extends 'store_new/base.html' %}
 {% block title %}Detalii Comandă{% endblock %}
 {% block content %}
-<h2>Detalii Comandă #{{ order.id }}</h2>
-<p>Status: {{ order.get_status_display }}</p>
-<p>Total: {{ order.total_amount }} lei</p>
-{% if order.package_box %}
-  <p>Cutia alocată: {{ order.package_box.code }}</p>
-{% else %}
-  <p>Comanda este în așteptare pentru alocarea unui colet.</p>
+<h1>Detalii Comandă #{{ order.id }}</h1>
+<table class="table table-bordered">
+    <tr>
+        <th>Status</th>
+        <td>{{ order.get_status_display }}</td>
+    </tr>
+    <tr>
+        <th>Total</th>
+        <td>{{ order.total_amount }} lei</td>
+    </tr>
+    <tr>
+        <th>Adresă de livrare</th>
+        <td>{{ order.county }}, {{ order.street }}{% if order.commune %}, {{ order.commune }}{% endif %}</td>
+    </tr>
+</table>
+
+<h2>Produse comandate:</h2>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Produs</th>
+            <th>Preț (lei)</th>
+            <th>Cantitate</th>
+            <th>Total (lei)</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in items %}
+        <tr>
+            <td>{{ item.product_title }}</td>
+            <td>{{ item.product_price }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.product_price|multiply:item.quantity }} lei</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% if order.status in "pending waiting" %}
+    <a href="{% url 'store_new:cancel_order' order_id=order.id %}" class="btn btn-danger">Anulează Comanda</a>
 {% endif %}
-<h3>Produse:</h3>
-<ul class="order-items">
-  {% for item in items %}
-    <li>{{ item.product_title }} - Cantitate: {{ item.quantity }} - Preț: {{ item.product_price }} lei</li>
-  {% endfor %}
-</ul>
 {% endblock %}

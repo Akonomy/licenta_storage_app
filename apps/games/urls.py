@@ -4,6 +4,10 @@ from .views import start_game, game_detail, game_over, game_won
 from django.urls import path
 from . import views
 
+app_name = 'apps.games'
+
+
+
 urlpatterns = [
     path('', views.start_game, name='start_game'),
     path('start/', views.start_game, name='start_game'),
