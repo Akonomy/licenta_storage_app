@@ -95,7 +95,7 @@ class Box(models.Model):
     ]
     
 
-    code = models.CharField(max_length=3, unique=True, blank=True)  # Cod unic de 3 caractere
+    code = models.CharField(max_length=10, unique=True, blank=True)  # Cod unic de 10 caractere
     name = models.CharField(max_length=100)  # Numele cutiei
     color = models.CharField(max_length=10, choices=COLOR_CHOICES)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='in_stoc')
