@@ -1,6 +1,7 @@
 {% extends "store_new/base.html" %}
 {% block title %}Checkout{% endblock %}
 {% block content %}
+{% load cart_extras %}
 <h2>Checkout</h2>
 {% if request.user.is_authenticated %}
   <p>Banii disponibili: <strong>{{ request.user.coins }} lei</strong></p>
