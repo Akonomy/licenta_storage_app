@@ -77,6 +77,8 @@ MIDDLEWARE = [
     
     'whitenoise.middleware.WhiteNoiseMiddleware',
 
+    'django.middleware.locale.LocaleMiddleware',
+
 
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -201,3 +203,14 @@ REST_FRAMEWORK = {
     ),
     # alte setări...
 }
+
+
+
+USE_I18N = True
+LANGUAGES = [
+    ('en', 'English'),
+    ('ro', 'Română'),
+]
+
+
+

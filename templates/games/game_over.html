@@ -1,23 +1,23 @@
 {% extends 'games/base_game.html' %}
 
-{% block title %}Game Over{% endblock %}
+{% block title %}Sfârșit de Joc{% endblock %}
 
 {% block content %}
-    <h2>Game Over</h2>
+    <h2>Sfârșit de Joc</h2>
 
     {% if game.guessed_correctly %}
         <div class="message success">
-            <p>Congratulations! You guessed the correct number: {{ game.target_number }}</p>
+            <p>Felicitări! Ai ghicit numărul corect: {{ game.target_number }}</p>
         </div>
     {% else %}
         <div class="message error">
-            <p>You've used all your attempts.</p>
-            <p>The correct number was: {{ game.target_number }}</p>
+            <p>Ți-ai epuizat toate încercările.</p>
+            <p>Numărul corect era: {{ game.target_number }}</p>
         </div>
     {% endif %}
 
-    <form method="post" action="{% url 'start_game' %}">
+    <form method="post" action="{% url 'games:start_game' %}">
         {% csrf_token %}
-        <input type="submit" value="Play Again" class="btn">
+        <input type="submit" value="Joacă din nou" class="btn">
     </form>
 {% endblock %}

@@ -1,5 +1,5 @@
 {% extends "games/base_game.html" %}
-{% block title %}Congratulations!{% endblock %}
+{% block title %}Felicitări!{% endblock %}
 {% block content %}
 <style>
   .win-container {
@@ -46,29 +46,36 @@
     background: #0288d1;
   }
 </style>
-
 <div class="win-container">
-  <h1>Congratulations! You Won the Game!</h1>
+  <h1>Felicitări! Ai câștigat jocul</h1>
   
   <table class="win-table">
     <tr>
-      <td>Base Coins:</td>
+      <td>Monede de bază:</td>
       <td>{{ base_coins }}</td>
     </tr>
     <tr>
-      <td>Bonus for Remaining Attempts:</td>
+      <td>Bonus pentru încercările rămase:</td>
       <td>{{ remaining_attempts_bonus }}</td>
     </tr>
     <tr>
-      <td>Difficulty Bonus:</td>
+      <td>Bonus de dificultate:</td>
       <td>{{ difficulty_bonus }}</td>
+    </tr>
+    <tr>
+      <td>Încercări folosite:</td>
+      <td>{{ attempts }}</td>
+    </tr>
+    <tr>
+      <td>Ai ghichit în intervalul :</td>
+      <td>{{ number_range }}</td>
     </tr>
   </table>
 
   <div class="total-coins">
-    {{ total_coins }} Coins!
+    {{ total_coins }} Monede!
   </div>
 
-  <a href="{% url 'games:start_game' %}" class="new-game-btn">Start a New Game</a>
+  <a href="{% url 'games:start_game' %}" class="new-game-btn">Începe un joc nou</a>
 </div>
 {% endblock %}

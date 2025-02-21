@@ -1,21 +1,21 @@
 {% extends 'games/base_game.html' %}
 
-{% block title %}Start New Game{% endblock %}
+{% block title %}Începe Joc Nou{% endblock %}
 
 {% block content %}
-    <h2>Welcome, {{ user.username }}!</h2>
-    <p>Are you ready to challenge your guessing skills?</p>
+    <h2>Bine ai venit, {{ user.username }}!</h2>
+    <p>Ești pregătit să îți pui la încercare abilitățile de ghicit?</p>
 
-    {% if messages %}
-        {% for message in messages %}
-            <div class="message {{ message.tags }}">
-                {{ message }}
-            </div>
-        {% endfor %}
-    {% endif %}
+ {% if messages %}
+    {% for message in messages %}
+        <div class="message {{ message.tags }}" style="display: none;">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
 
     <form method="post">
         {% csrf_token %}
-        <input type="submit" value="Start Game" class="btn">
+        <input type="submit" value="Începe Jocul" class="btn">
     </form>
 {% endblock %}

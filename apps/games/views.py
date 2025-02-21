@@ -54,17 +54,17 @@ def game_detail(request, game_id):
         game.save()
 
         if result == 'correct':
-            messages.success(request, 'Congratulations! You guessed the correct number.')
+            messages.success(request, 'Felicitări! Ai ghicit numărul corect.')
         elif result == 'greater':
-            messages.info(request, 'The number is greater than your guess.')
+            messages.info(request, 'Numărul este mai mare decât presupunerea ta.')
         else:
-            messages.info(request, 'The number is less than your guess.')
+            messages.info(request, 'Numărul este mai mic decât presupunerea ta.')
 
         if game.is_game_over():
             if game.guessed_correctly:
                 return redirect('games:game_won', game_id=game.id)  # Redirect to the win page
             else:
-                messages.error(request, 'You lost the game. Maximum attempts reached.')
+                messages.error(request, 'Ai pierdut jocul. Numărul maxim de încercări a fost atins.')
                 return redirect('games:game_over', game_id=game.id)
 
     # Calculate remaining attempts
@@ -75,6 +75,7 @@ def game_detail(request, game_id):
         'remaining_attempts': remaining_attempts,
         'last_guess': last_guess,
     })
+
 
 
 @login_required
@@ -108,7 +109,16 @@ def game_won(request, game_id):
     game.reward_given = True
     game.save()
 
+    number_range = game.number_range
+    attempts= game.current_attempts
+
+
+ 
+
+
     return render(request, 'games/game_won.html', {
+        'number_range':number_range,
+        'attempts': attempts,
         'base_coins': base_coins,
         'remaining_attempts_bonus': remaining_attempts_bonus,
         'difficulty_bonus': difficulty_bonus,
