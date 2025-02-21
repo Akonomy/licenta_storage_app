@@ -93,22 +93,13 @@
     </div>
 
 
-        <!-- Card pentru Autenticitatea Pachetelor Livrate -->
-    <div class="row text-center my-5">
-        <div class="col-md-4 offset-md-4">
-            <a href="/store/search/" class="link-div">
-                <div class="card h-100 p-4">
-                    <div class="feature-icon mb-3">
-                        <i class="fas fa-shield-alt fa-3x"></i>
-                    </div>
-                    <h5>{% trans "Asigurăm autenticitatea pachetelor livrate" %}</h5>
-                    <p>{% trans "Verificăm calitatea și integritatea fiecărui pachet pentru a garanta o livrare sigură și de încredere." %}</p>
-                </div>
-            </a>
-        </div>
-    </div>
+  
 
-    
+        
+
+
+
+
 
     <!-- Accordion pentru Instalare și Configurare -->
     <div class="installation-section my-5">
@@ -182,11 +173,14 @@
                 </div>
             </div>
             <div class="col-md-3 mb-4">
+
                 <div class="security-box h-100 p-3">
-                    <i class="fas fa-sync-alt fa-3x mb-3"></i>
-                    <h5>{% trans "Actualizări Automate" %}</h5>
-                    <p>{% trans "Sistemul suportă actualizări prin API-uri." %}</p>
+                     <a href="/store/search/" class="link-div">
+                    <i class="fas  fa-check-circle fa-3x"></i>
+                    <h5>{% trans "Asigurăm autenticitatea" %}</h5>
+                    <p>{% trans "Sistemul suporta verificarea coletelor prin RFID" %}</p>
                 </div>
+            </a>
             </div>
             <div class="col-md-3 mb-4">
                 <div class="security-box h-100 p-3">
