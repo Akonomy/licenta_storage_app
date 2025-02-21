@@ -10,28 +10,7 @@ from apps.robot_interface.models import Task  # Import Task model
 
 
 
-def box_search(request):
-    if request.method == 'POST':
-        box_code = request.POST.get('box_id')
-        if not box_code:
-            messages.error(request, "Te rog introdu un cod de cutie valid.")
-            return redirect('store_new:box_search')
-        # Redirecționăm către view-ul de detaliere, folosind parametrul 'box_code'
-        return redirect('store_new:box_detail', box_code=box_code)
-    return render(request, 'store_new/box_search.html')
 
-
-def box_detail(request, box_code):
-    # Căutăm cutia după cod (nu după id)
-    box = get_object_or_404(Box, code=box_code)
-    # Obținem istoricul comenzilor în care cutia a fost alocată
-    order_history = Order.objects.filter(package_box=box)
-    
-    context = {
-        'box': box,
-        'order_history': order_history,
-    }
-    return render(request, 'store_new/box_detail.html', context)
 
 
 
@@ -40,8 +19,8 @@ def product_list(request):
     return render(request, 'store/product_list.html', {'boxes': boxes})
 
 
-def product_detail(request, box_id):
-    box = get_object_or_404(Box, id=box_id)
+def product_detail(request, box_code):
+    box = get_object_or_404(Box, code=box_code)
     return render(request, 'store/product_detail.html', {'box': box})
 
 
@@ -50,7 +29,7 @@ def add_to_cart(request, box_id):
     cart = request.session.get('cart', {})
 
     # Check if the box is in 'depozit' before adding
-    if box.section.type != 'depozit':
+    if box.section.tip_sectie != 'depozit':
         messages.error(request, 'This item is no longer available.')
         return redirect('product_list')
 
@@ -75,7 +54,7 @@ def cart_view(request):
         box = Box.objects.get(id=box_id)
 
         # Check if the box is still in 'depozit'
-        if box.section.type != 'depozit':
+        if box.section.tip_sectie != 'depozit':
             # Remove it from cart
             del updated_cart[box_id]
             messages.error(request, f'Item {box.code} is no longer available and has been removed from your cart.')
@@ -111,7 +90,7 @@ def checkout(request):
     for box_id in cart.keys():
         box = Box.objects.get(id=box_id)
         # Check if box is still in 'depozit'
-        if box.section.type != 'depozit':
+        if box.section.tip_sectie != 'depozit':
             invalid_boxes.append(box)
         else:
             valid_boxes.append(box)
@@ -148,9 +127,8 @@ def checkout(request):
             OrderItem.objects.create(order=order, box=box)
 
             # Ensure 'livrare' section exists
-            livrare_section, created = Section.objects.get_or_create(
-                name='livrare', defaults={'type': 'livrare', 'max_capacity': 1000}
-            )
+            livrare_section, created = Section.objects.get_or_create( nume_custom='livrare', defaults={'tip_sectie': 'livrare', 'max_capacity': 1000}
+)
 
             # Create a Task to move the box to 'livrare'
             Task.objects.create(

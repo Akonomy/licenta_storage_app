@@ -54,20 +54,7 @@
     </tr>
 </table>
 
-<h2>Comenzi asociate acestei cutii</h2>
-{% if order_history %}
-    <ul>
-        {% for order in order_history %}
-            <li>
-                Comanda #{{ order.id }} - Status: {{ order.get_status_display }} - Data: {{ order.ordered_date|date:"d M Y H:i" }}
-                <!-- Link către detaliile complete ale comenzii asociate -->
-                <a href="{% url 'store_new:order_associated_detail' order_id=order.id %}">Vezi detalii comandă</a>
-            </li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p>Nu există comenzi asociate acestei cutii.</p>
-{% endif %}
+<
 
 <a href="{% url 'store_new:box_search' %}" class="btn btn-secondary">Caută altă cutie</a>
 {% endblock %}
