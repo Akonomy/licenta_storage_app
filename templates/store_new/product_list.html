@@ -3,6 +3,14 @@
 {% load static %}
 {% block title %}Produse - Magazin Online{% endblock %}
 {% block content %}
+ {% if messages %}
+    {% for message in messages %}
+        <div class="message {{ message.tags }}" style="display: none;">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+
 <div class="container">
   <h1 class="mb-4 text-center">Lista de Produse</h1>
   <div class="product-grid">

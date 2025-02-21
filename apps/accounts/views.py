@@ -7,6 +7,7 @@ from django.contrib import messages
 
 User = get_user_model()
 
+
 @login_required
 def manage_users_view(request):
     # Asigurăm accesul doar pentru utilizatorii master sau superuser
@@ -26,20 +27,31 @@ def manage_users_view(request):
     else:
         users = User.objects.all()
 
-    # Procesăm modificarea rolului unui utilizator
     if request.method == "POST":
+        action = request.POST.get('action')
         user_id = request.POST.get('user_id')
-        new_role = request.POST.get('role')
         try:
             user_to_update = User.objects.get(pk=user_id)
+        except User.DoesNotExist:
+            messages.error(request, "Utilizatorul nu a fost găsit.")
+            return redirect('manage_users')
+
+        if action == "update_role":
+            new_role = request.POST.get('role')
             if new_role in dict(User.ROLE_CHOICES):
                 user_to_update.role = new_role
                 user_to_update.save()
                 messages.success(request, f"Rolul pentru utilizatorul {user_to_update.username} a fost actualizat.")
             else:
                 messages.error(request, "Rol invalid selectat.")
-        except User.DoesNotExist:
-            messages.error(request, "Utilizatorul nu a fost găsit.")
+        elif action == "delete_user":
+            # Evităm ștergerea propriului cont, de exemplu
+            if user_to_update == request.user:
+                messages.error(request, "Nu îți poți șterge propriul cont.")
+            else:
+                username = user_to_update.username
+                user_to_update.delete()
+                messages.success(request, f"Utilizatorul {username} a fost șters cu succes.")
         return redirect('manage_users')
 
     context = {

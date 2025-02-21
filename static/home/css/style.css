@@ -1,10 +1,35 @@
-/* Hero Section Styles */
-/* Hero Section Styles */
+/* ==========================================================================
+   GENERAL STYLES & GLOBAL
+   ========================================================================== */
+body {
+    background: #f9f9f9;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.link-div {
+    text-decoration: none; /* Elimină sublinierea */
+    color: inherit; /* Moștenește culoarea textului */
+    display: block; /* Face link-ul să se comporte ca un div */
+}
+
+.product-price {
+    font-size: 24px;
+    font-weight: 700;
+    color: green;
+    margin-bottom: 12px;
+    transition: transform 0.3s ease;
+}
+
+/* ==========================================================================
+   HERO SECTION STYLES
+   ========================================================================== */
 .hero-section {
     background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/static/home/images/warehous.png') no-repeat center center;
-    background-size: cover;  /* Ensure the image covers the full area */
-    width: vw;  /* Set to 100% of the viewport width */
-    height: -1vh;  /* Adjust height to be less than full screen */
+    background-size: cover;  /* Asigură că imaginea acoperă întreaga zonă */
+    width: 100vw;  /* 100% din lățimea viewport-ului */
+    height: -1vh;  /* Înălțime ajustată (poți modifica după preferințe) */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -12,10 +37,9 @@
     text-align: center;
     padding: 0 15px;
     position: relative;
-    overflow: hidden;  /* Prevents overflow issues */
+    overflow: hidden;  /* Previne problemele de overflow */
 }
 
-/* Hero Section Text Styling */
 .hero-section h1 {
     font-size: 3rem;
     font-weight: bold;
@@ -29,50 +53,45 @@
 
 .hero-section .btn {
     font-size: 1.2rem;
-    padding: 10px 30px;
+    padding: 8px 25px; /* Ajustat pentru o mai bună prezentare pe telefoane */
 }
 
-/* Responsive Tweaks for Smaller Screens */
+/* Responsive Hero Section Tweaks */
 @media (max-width: 768px) {
-    .hero-section h1 {
-        font-size: 2.5rem;
-    }
-
-    .hero-section p {
-        font-size: 1.1rem;
-    }
-}
-
-@media (max-width: 576px) {
     .hero-section {
-        height: 50vh;  /* Reduce height on smaller screens */
+        padding: 0 10px;
+        min-height: 50vh;
     }
-
     .hero-section h1 {
         font-size: 2rem;
     }
-
     .hero-section p {
         font-size: 1rem;
     }
 }
 
-
-.hero-section .btn {
-    font-size: 1.2rem;
-    padding: 8px 25px; /* Adjusted for a better look on phones */
+@media (max-width: 576px) {
+    .hero-section h1 {
+        font-size: 1.75rem;
+    }
+    .hero-section p {
+        font-size: 0.95rem;
+    }
 }
 
-/* Feature Boxes */
-.feature-box {
+/* ==========================================================================
+   FEATURE & SECURITY BOXES
+   ========================================================================== */
+.feature-box, .security-box {
     background-color: #ffffff;
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    padding: 20px;
+    padding: 30px;
+    margin-bottom: 30px;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.feature-box:hover {
+.feature-box:hover, .security-box:hover {
     transform: translateY(-8px);
     box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
 }
@@ -83,30 +102,31 @@
     margin-bottom: 15px;
 }
 
-/* Security Boxes */
-.security-box {
-    background-color: #ffffff;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.security-box:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
-}
-
 .security-box i {
     font-size: 3rem;
     color: #28a745;
     margin-bottom: 15px;
 }
 
-/* Call to Action Section */
+/* Responsive Tweaks for Boxes */
+@media (max-width: 768px) {
+    .feature-icon i, .security-box i {
+        font-size: 2.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .feature-box, .security-box {
+        padding: 20px;
+    }
+}
+
+/* ==========================================================================
+   CALL TO ACTION SECTION
+   ========================================================================== */
 .cta-section {
     background-color: #343a40;
-    padding: 40px 15px; /* Reduced padding for better responsiveness */
+    padding: 40px 15px;
     color: #ffffff;
     text-align: center;
 }
@@ -127,80 +147,53 @@
     margin: 10px;
 }
 
-/* Responsive Tweaks */
+/* Responsive CTA Tweaks */
 @media (max-width: 768px) {
-    .hero-section {
-        padding: 0 10px; /* Reduce padding for smaller screens */
-        min-height: 50vh; /* Adjusted height for smaller screens */
-    }
-
-    .hero-section h1 {
-        font-size: 2rem; /* Adjusted for phones */
-    }
-
-    .hero-section p {
-        font-size: 1rem; /* Reduced for phones */
-    }
-
     .cta-section h2 {
-        font-size: 2rem; /* Adjusted for smaller screens */
+        font-size: 2rem;
     }
-
     .cta-section p {
-        font-size: 1rem; /* Reduced font size for smaller screens */
-    }
-    
-    .feature-icon i, .security-box i {
-        font-size: 2.5rem; /* Adjust icon size for phones */
+        font-size: 1rem;
     }
 }
 
 @media (max-width: 576px) {
-    .hero-section h1 {
-        font-size: 1.75rem; /* Even smaller for extra small screens */
-    }
-
-    .hero-section p {
-        font-size: 0.95rem; /* Smaller paragraph for phones */
-    }
-
     .cta-section h2 {
-        font-size: 1.75rem; /* Adjusted for extra small screens */
+        font-size: 1.75rem;
     }
-
     .cta-section p {
-        font-size: 0.95rem; /* Adjusted for extra small screens */
-    }
-    
-    .feature-box, .security-box {
-        padding: 20px;
+        font-size: 0.95rem;
     }
 }
 
-/* Global */
-.feature-box, .security-box {
-    padding: 30px;
-    margin-bottom: 30px;
+/* ==========================================================================
+   TABLE STYLES
+   ========================================================================== */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
 }
 
-
-
-
-
-.link-div {
-    text-decoration: none; /* Elimină sublinierea */
-    color: inherit; /* Moștenește culoarea textului */
-    display: block; /* Face link-ul să se comporte ca un div */
+table th, table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
 }
 
-
-
-
-
-.product-price {
-  font-size: 24px;
-  font-weight: 700;
-  color: green;
-  margin-bottom: 12px;
-  transition: transform 0.3s ease;
+table th {
+    background-color: #007acc;
+    color: #fff;
 }
+
+table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+table tr:hover {
+    background-color: #e9e9e9;
+}
+
+/* ==========================================================================
+   END OF STYLES
+   ========================================================================== */

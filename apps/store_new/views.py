@@ -231,7 +231,7 @@ def checkout(request):
                     created_by=user
                 )
                 # Actualizăm statusul și secțiunea cutiei
-                free_box.section = delivery_section
+                
                 free_box.status = 'sold'
                 free_box.save()
 

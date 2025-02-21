@@ -1,6 +1,7 @@
 # apps/inventory/models.py
 from django.db import models
 import uuid
+from django.utils import timezone
 
 # Section model
 class Section(models.Model):
@@ -103,17 +104,17 @@ class Box(models.Model):
     section = models.ForeignKey(Section, on_delete=models.CASCADE, null=True, blank=True)  # Secțiunea în care se află cutia
     image = models.ImageField(upload_to='box_images/', blank=True, null=True, default='box_images/default.jpg')  # Imaginea cutiei
 
+    added_date = models.DateTimeField(default=timezone.now, editable=False)
+
+    sold_date = models.DateTimeField(null=True, blank=True)  # Data la care cutia este vânduta
+
     class Meta:
         ordering = ['color', 'code', 'price']
 
     def __str__(self):
         return f"{self.get_color_display()} Box - {self.name} ({self.code})"
 
-    def save(self, *args, **kwargs):
-        if not self.code:
-            # Generează un cod unic de 3 caractere. Atenție: pentru producție se poate dori o metodă mai robustă.
-            self.code = str(uuid.uuid4()).split('-')[0][:6].upper()
-        super().save(*args, **kwargs)
+
 
     def remove_from_section(self):
         """Mută cutia în secțiunea 'unknown'"""
@@ -136,3 +137,16 @@ class Box(models.Model):
         else:
             # Dacă nu este atribuită nicio secțiune, atribuim direct secțiunea țintă
             target_section.add_box(self)
+
+
+
+    def save(self, *args, **kwargs):
+        if not self.code:
+            # Generează un cod unic de 6 caractere. Atenție: pentru producție se poate dori o metodă mai robustă.
+            self.code = str(uuid.uuid4()).split('-')[0][:6].upper()
+        
+        # Dacă statusul devine 'sold' și sold_date nu este setată, actualizează data vânzării
+        if self.status == 'sold' and not self.sold_date:
+            self.sold_date = timezone.now()
+        
+        super().save(*args, **kwargs)

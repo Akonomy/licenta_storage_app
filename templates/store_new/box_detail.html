@@ -1,26 +1,91 @@
 {% extends "base.html" %}
 {% block content %}
-  <h1>Detalii pentru Cutia {{ box.code }}</h1>
-  <ul>
-    <li><strong>Nume:</strong> {{ box.name }}</li>
-    <li><strong>Culoare:</strong> {{ box.get_color_display }}</li>
-    <li><strong>Preț:</strong> {{ box.price }}</li>
-    <li><strong>Stare:</strong> {{ box.status }}</li>
-    <li><strong>Secțiune curentă:</strong> {{ box.section.nume_custom }} ({{ box.section.get_tip_sectie_display }})</li>
-  </ul>
+{% load tz %}
 
-  <h2>Istoric vânzări / tranzacții</h2>
-  {% if order_history %}
-    <ul>
-      {% for item in order_history %}
-        <li>
-          Vândut la: {{ item.order.created_at }} – Detalii: {{ item.order }} <!-- adaptează după modelul tău -->
-        </li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p>Nu există istoric de vânzări pentru această cutie.</p>
-  {% endif %}
+<style>
+  /* Stiluri minimale pentru tabele */
+  table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+  }
+  th, td {
+      padding: 8px;
+      text-align: left;
+      border: 1px solid #ddd;
+  }
+  th {
+      background-color: #f2f2f2;
+  }
+  h2 {
+      color: #336699;
+  }
+</style>
+
+<h2>Detalii Colet</h2>
+<table>
+  <tr>
+    <th>Câmp</th>
+    <th>Valoare</th>
+  </tr>
+  <tr>
+    <td>Cod</td>
+    <td>{{ box.code }}</td>
+  </tr>
+  <tr>
+    <td>Nume</td>
+    <td>{{ box.name }}</td>
+  </tr>
+  <tr>
+    <td>Culoare</td>
+    <td>{{ box.get_color_display }}</td>
+  </tr>
+  <tr>
+    <td>Status</td>
+    <td>{{ box.get_status_display }}</td>
+  </tr>
+  <tr>
+    <td>Preț livrare</td>
+    <td>{{ box.price }}</td>
+  </tr>
+  <tr>
+    <td>Secțiune</td>
+    <td>{% if box.section %}{{ box.section.nume_custom }}{% else %}N/A{% endif %}</td>
+  </tr>
+  <tr>
+    <td>Data Adăugării</td>
+   <td>{{ box.added_date|timezone:"Europe/Bucharest" }}</td>
+
+  </tr>
+  <tr>
+    <td>Data Vânzării</td>
+    <td>{% if box.sold_date %}{{ box.sold_date|timezone:"Europe/Bucharest" }}{% else %}N/A{% endif %}</td>
+  </tr>
+</table>
+
+<h2>Istoric Comenzi</h2>
+{% if order_history %}
+<table>
+  <tr>
+    <th>ID Comandă</th>
+    <th>User</th>
+    <th>Data Comenzii</th>
+    <th>Status</th>
+    <th>Total</th>
+    <th>Adresă</th>
+  </tr>
+  {% for order in order_history %}
+  <tr>
+    <td>{{ order.id }}</td>
+    <td>{{ order.user.username }}</td>
+    <td>{{ order.ordered_date|timezone:"Europe/Bucharest" }}</td>
+    <td>{{ order.get_status_display }}</td>
+    <td>{{ order.total_amount }}</td>
+    <td>{{ order.county }}, {{ order.street }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% else %}
+<p>Nu există comenzi asociate acestei cutii.</p>
+{% endif %}
 {% endblock %}
-
-

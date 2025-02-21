@@ -2,6 +2,15 @@
 {% load cart_extras %}
 {% block title %}Detalii Produs{% endblock %}
 {% block content %}
+
+ {% if messages %}
+    {% for message in messages %}
+        <div class="message {{ message.tags }}" style="display: none;">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+
 <div class="container">
   <div class="row">
     <div class="col-md-6">

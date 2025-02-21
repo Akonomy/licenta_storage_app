@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load tz %}
 {% load static %}
 
 <head>
@@ -34,7 +34,7 @@
                             {{ task.get_status_display }}
                         </span>
                     </td>
-                    <td>{{ task.created_at }}</td>
+                    <td>{{ task.created_at |timezone:"Europe/Bucharest" }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
