@@ -6,14 +6,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}Inventory{% endblock %}</title>
   <link rel="stylesheet" href="{% static 'inventory/style.css' %}">
+  <link rel="shortcut icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
+
 </head>
 <body>
   <header>
     <div class="container">
-      <h1>Inventory Management</h1>
+     
+      <h1> Inventory Management </h1>
+   
       <nav>
         <ul>
+          <li><a href="{% url 'home' %}">Autostorage</a></li>
           <li><a href="{% url 'inventory_home' %}">Acasă</a></li>
+
           <li><a href="{% url 'box_list' %}">Cutii</a></li>
           <li><a href="{% url 'section_list' %}">Secțiuni</a></li>
         </ul>

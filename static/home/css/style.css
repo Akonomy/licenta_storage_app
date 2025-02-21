@@ -182,3 +182,25 @@
     padding: 30px;
     margin-bottom: 30px;
 }
+
+
+
+
+
+.link-div {
+    text-decoration: none; /* Elimină sublinierea */
+    color: inherit; /* Moștenește culoarea textului */
+    display: block; /* Face link-ul să se comporte ca un div */
+}
+
+
+
+
+
+.product-price {
+  font-size: 24px;
+  font-weight: 700;
+  color: green;
+  margin-bottom: 12px;
+  transition: transform 0.3s ease;
+}

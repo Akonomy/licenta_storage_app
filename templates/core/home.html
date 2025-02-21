@@ -26,32 +26,57 @@
 
     <!-- Key Features with Icons -->
     <div class="row text-center">
+
+        
         <div class="col-md-4 mb-4">
+            <a href="/inventory/" class="link-div">
             <div class="feature-box h-100 p-4">
+                
                 <div class="feature-icon mb-3">
                     <i class="fas fa-warehouse fa-3x"></i>
                 </div>
                 <h5>Automated Inventory Management</h5>
                 <p>Efficiently manage stock levels and warehouse sections.</p>
             </div>
+            </a>
         </div>
-        <div class="col-md-4 mb-4">
+        
+        
+                 
+            <div class="col-md-4 mb-4">
+                 <a href="/store/" class="link-div">
+               
             <div class="feature-box h-100 p-4">
+                
                 <div class="feature-icon mb-3">
                     <i class="fas fa-shopping-cart fa-3x"></i>
                 </div>
                 <h5>Order Processing</h5>
                 <p>Streamline order fulfillment with integrated systems.</p>
+
             </div>
+            </a>
         </div>
+        
+
+
+
+        
         <div class="col-md-4 mb-4">
+            <a href="/robot/" class="link-div">
+           
             <div class="feature-box h-100 p-4">
+                 
                 <div class="feature-icon mb-3">
                     <i class="fas fa-robot fa-3x"></i>
                 </div>
                 <h5>Robotic Integration</h5>
                 <p>Control and monitor warehouse robots via Raspberry Pi.</p>
             </div>
+        </a>
+
+
+
         </div>
     </div>
 
@@ -179,24 +204,13 @@
     <div class="container py-5">
         <h2 class="mb-4">Ready to Explore?</h2>
         <p class="mb-4">Select an application to get started.</p>
-        <div class="row">
-            <div class="col-12 col-sm-6 col-md-4 mb-3">
+        <div class="row justify-content-center">
+            <div class="col-12 col-sm-6 col-md-6 mb-2">
                 <a href="/store/" class="btn btn-lg btn-light w-100">Store</a>
             </div>
-            <div class="col-12 col-sm-6 col-md-4 mb-3">
+            <div class="col-12 col-sm-6 col-md-6 mb-2">
                 <a href="/games/start" class="btn btn-lg btn-light w-100">Games</a>
             </div>
-            {% if user.is_authenticated  %}
-            <div class="col-12 col-sm-6 col-md-4 mb-3">
-                <a href="/inventory/" class="btn btn-lg btn-secondary w-100">Inventory</a>
-            </div>
-            <div class="col-12 col-sm-6 col-md-4 mb-3">
-                <a href="/accounts/" class="btn btn-lg btn-secondary w-100">Accounts</a>
-            </div>
-            <div class="col-12 col-sm-6 col-md-4 mb-3">
-                <a href="/robot/" class="btn btn-lg btn-secondary w-100">Robot Interface</a>
-            </div>
-            {% endif %}
         </div>
     </div>
 </div>

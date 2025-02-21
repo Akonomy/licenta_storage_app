@@ -1,45 +1,63 @@
 {% extends 'store_new/base.html' %}
-{% block title %}Coș de Cumpărături{% endblock %}
 {% load cart_extras %}
+{% block title %}Coș de Cumpărături{% endblock %}
 {% block content %}
-<h1>Coșul tău</h1>
-{% if cart_items %}
+<div class="container">
+  <h1 class="text-center mb-4">Coșul tău</h1>
+  {% if cart_items %}
     <form method="post" action="{% url 'store_new:update_cart' %}">
-        {% csrf_token %}
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Produs</th>
-                    <th>Preț (lei)</th>
-                    <th>Cantitate</th>
-                    <th>Total (lei)</th>
-                    <th>Acțiuni</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in cart_items %}
-                <tr>
-                    <td>{{ item.title }}</td>
-                    <td>{{ item.price }}</td>
-                    <td>
-                        <input type="number" name="quantity_{{ item.id }}" value="{{ item.quantity }}" min="0" class="form-control" style="width: 80px;">
-                    </td>
-                    <td>{{ item.price|multiply:item.quantity }} lei</td>
-                    <td>
-                        <a href="{% url 'store_new:remove_from_cart' product_id=item.id %}" class="btn btn-danger btn-sm">Elimină</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <p class="font-weight-bold">Total: {{ total }} lei</p>
-        <button type="submit" class="btn btn-primary">Actualizează Coșul</button>
-        <a href="{% url 'store_new:checkout' %}" class="btn btn-success">Finalizează Comanda</a>
-
+      {% csrf_token %}
+      <table class="cart-table">
+        <thead>
+          <tr>
+            <th>Produs</th>
+            <th>Preț (lei)</th>
+            <th>Cantitate</th>
+            <th>Total (lei)</th>
+            <th>Acțiuni</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in cart_items %}
+          <tr>
+            <td>{{ item.title }}</td>
+            <td>{{ item.price }}</td>
+            <td>
+              <input type="number" name="quantity_{{ item.id }}" value="{{ item.quantity }}" min="0" class="form-control" style="width: 80px; margin: auto;">
+            </td>
+            <td>{{ item.price|multiply:item.quantity }} lei</td>
+            <td>
+              <a href="{% url 'store_new:remove_from_cart' product_id=item.id %}" class="btn btn-danger btn-sm">Elimină</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <p class="font-weight-bold text-center">Total: {{ total }} lei</p>
+      <div class="text-center">
+        <button type="submit" class="btn btn-primary mr-2">Actualizează Coșul</button>
+        <a href="{% url 'store_new:checkout' %}" class="btn btn-success mr-2">Finalizează Comanda</a>
         <a href="{% url 'store_new:order_history' %}" class="btn btn-info">Istoric Comenzi</a>
+      </div>
     </form>
-{% else %}
-    <p>Coșul este gol.</p>
-    <a href="{% url 'store_new:order_history' %}" class="btn btn-info">Istoric Comenzi</a>
-{% endif %}
+  {% else %}
+    <p class="cart-empty">Coșul este gol.</p>
+    <div class="text-center">
+      <a href="{% url 'store_new:order_history' %}" class="btn btn-info">Istoric Comenzi</a>
+    </div>
+  {% endif %}
+</div>
+{% block extra_js %}
+<script>
+  $(document).ready(function(){
+      let updateTimeout;
+      $('form').on('input', 'input[type="number"]', function(){
+          clearTimeout(updateTimeout);
+          updateTimeout = setTimeout(() => {
+              $(this).closest('form').submit();
+          }, 1000);
+      });
+  });
+</script>
+{% endblock %}
 {% endblock %}

@@ -146,12 +146,10 @@ def update_cart(request):
 
 @login_required
 def remove_from_cart(request, product_id):
-    """
-    Elimină complet un produs din coș.
-    """
     cart = request.session.get('cart', {})
-    if product_id in cart:
-        del cart[product_id]
+    product_key = str(product_id)  # conversie la string
+    if product_key in cart:
+        del cart[product_key]
         messages.success(request, 'Produsul a fost eliminat din coș.')
     request.session['cart'] = cart
     return redirect('store_new:cart_view')

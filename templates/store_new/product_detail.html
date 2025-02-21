@@ -2,15 +2,18 @@
 {% load cart_extras %}
 {% block title %}Detalii Produs{% endblock %}
 {% block content %}
-<div class="row">
+<div class="container">
+  <div class="row">
     <div class="col-md-6">
-        <img src="{{ product.main_image }}" alt="{{ product.title }}" class="img-fluid">
+      <!-- Afișăm imaginea produsului cu un div stilizat; pentru detalii, ajustăm înălțimea -->
+      <div class="product-image" style="background-image: url('{{ product.main_image }}'); height: 300px;"></div>
     </div>
     <div class="col-md-6">
-        <h1>{{ product.title }}</h1>
-        <p><strong>Preț:</strong> {{ product.price }} lei</p>
-        <p>{{ product.description }}</p>
-        <a href="{% url 'store_new:add_to_cart' product_id=product.id %}" class="btn btn-success">Adaugă în coș</a>
+      <h1 class="product-name">{{ product.title }}</h1>
+      <p class="product-price"><strong>Preț:</strong> {{ product.price }} lei</p>
+      <p>{{ product.description }}</p>
+      <a href="{% url 'store_new:add_to_cart' product_id=product.id %}" class="add-to-cart">Adaugă în coș</a>
     </div>
+  </div>
 </div>
 {% endblock %}

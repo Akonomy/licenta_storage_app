@@ -70,4 +70,16 @@
   <br>
   <button type="submit" class="btn-checkout">Plasează Comanda</button>
 </form>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  $(document).ready(function(){
+      setTimeout(function(){
+          $('.alert').fadeOut('slow');
+      }, 3000);
+  });
+</script>
+
 {% endblock %}
