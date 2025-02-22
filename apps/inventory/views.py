@@ -5,6 +5,8 @@ from django.db.models import Count, OuterRef
 from .forms import BoxForm, SectionForm
 from .models import Box, Section
 from apps.robot_interface.models import Task  # Modelul Task pentru crearea de taskuri
+import json
+from django.contrib import messages
 
 @login_required
 @user_passes_test(lambda u: u.has_page_access('admin'))
@@ -114,8 +116,9 @@ def section_list(request):
     return render(request, 'inventory/section_list.html', {'sections': sections})
 
 # Funcția de editare a cutiilor
+
 @login_required
-@user_passes_test(lambda u: u.is_master())
+@user_passes_test(lambda u: u.has_page_access('admin'))
 def edit_box(request, box_id):
     box = get_object_or_404(Box, id=box_id)
     if request.method == 'POST':
@@ -161,3 +164,93 @@ def delete_section(request, section_id):
         section.delete()
         return redirect('section_list')
     return render(request, 'inventory/delete_section.html', {'section': section})
+
+
+
+
+# Vizualizare pentru adăugarea unei noi cutii (Box)
+@login_required
+@user_passes_test(lambda u: u.has_page_access('admin'))
+def export_data(request):
+    # Export pentru Box-uri
+    boxes = Box.objects.all()
+    boxes_data = []
+    for box in boxes:
+        boxes_data.append({
+            "name": box.name,
+            "color": box.color,
+            "status": box.status,
+            "price": box.price,
+            # "section": box.section.code sau nume_custom – alegi ce e mai potrivit
+            "section": box.section.nume_custom if box.section else None,
+        })
+
+    # Export pentru Secțiuni
+    sections = Section.objects.all()
+    sections_data = []
+    for sec in sections:
+        sections_data.append({
+            "nume_custom": sec.nume_custom,
+            "tip_sectie": sec.tip_sectie,
+            "max_capacity": sec.max_capacity,
+        })
+
+    # Combinăm datele într-un singur dicționar
+    data = {
+        "boxes": boxes_data,
+        "sections": sections_data,
+    }
+    response = HttpResponse(
+        json.dumps(data, indent=4),
+        content_type='application/json'
+    )
+    response['Content-Disposition'] = 'attachment; filename="export_data.json"'
+    return response
+
+
+# Vizualizare pentru adăugarea unei noi cutii (Box)
+@login_required
+@user_passes_test(lambda u: u.has_page_access('admin'))
+def import_data(request):
+    if request.method == "POST":
+        # Presupunem că avem un input file cu numele 'json_file'
+        json_file = request.FILES.get('json_file')
+        if not json_file:
+            messages.error(request, "Nu a fost selectat niciun fișier!")
+            return redirect('import_data')
+        try:
+            data = json.load(json_file)
+        except Exception as e:
+            messages.error(request, "Eroare la citirea fișierului JSON: " + str(e))
+            return redirect('import_data')
+        
+        # Import pentru Secțiuni (mai întâi importăm secțiunile, apoi le putem asocia cutiilor)
+        sections_mapping = {}
+        for sec_data in data.get("sections", []):
+            section, created = Section.objects.get_or_create(
+                nume_custom=sec_data["nume_custom"],
+                defaults={
+                    "tip_sectie": sec_data.get("tip_sectie", "unknown"),
+                    "max_capacity": sec_data.get("max_capacity", 0),
+                    "current_capacity": 0,
+                }
+            )
+            sections_mapping[section.nume_custom] = section
+        
+        # Import pentru Box-uri
+        for box_data in data.get("boxes", []):
+            # Găsim secțiunea după nume; dacă nu se găsește, se poate seta None sau un fallback (ex: secțiunea 'unknown')
+            sec_name = box_data.get("section")
+            section = sections_mapping.get(sec_name)
+            # Creăm obiectul Box fără a specifica code, image, added_date sau sold_date
+            Box.objects.create(
+                name=box_data["name"],
+                color=box_data["color"],
+                status=box_data["status"],
+                price=box_data["price"],
+                section=section,
+            )
+        messages.success(request, "Datele au fost importate cu succes!")
+        return redirect('import_data')
+    return render(request, "inventory/import_data.html")
+

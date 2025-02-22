@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <title>Import/Export Date</title>
+</head>
+<body>
+    <h1>Import Date JSON</h1>
+    {% if messages %}
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="json_file" accept=".json">
+        <button type="submit">Importă</button>
+    </form>
+    <hr>
+    <h1>Export Date JSON</h1>
+    <a href="{% url 'export_data' %}"><button>Exportă</button></a>
+</body>
+</html>

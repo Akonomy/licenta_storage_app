@@ -16,4 +16,6 @@ urlpatterns = [
     path('add-section/', views.add_section, name='add_section'),
     path('edit-section/<int:section_id>/', views.edit_section, name='edit_section'),
     path('delete-section/<int:section_id>/', views.delete_section, name='delete_section'),
+    path('export/', views.export_data, name='export_data'),
+    path('import/', views.import_data, name='import_data'),
 ]
