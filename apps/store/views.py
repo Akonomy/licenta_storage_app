@@ -14,6 +14,7 @@ from apps.robot_interface.models import Task  # Import Task model
 
 
 
+
 def product_list(request):
     boxes = Box.objects.filter(section__tip_sectie='depozit')
     return render(request, 'store/product_list.html', {'boxes': boxes})
