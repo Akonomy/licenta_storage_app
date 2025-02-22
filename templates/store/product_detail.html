@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load box_image_tags %}
 {% block content %}
+{% load static %}
 <style>
     .product-detail-container {
         display: flex;
@@ -72,7 +73,8 @@
 
 <div class="product-detail-container">
     <div class="product-detail-image">
-        <img src="{{ box.image.url }}">
+
+        <img src="{% static 'home/images/' %}{% box_image_url box %}" alt="{{ box.code }}" width="200" style="margin-bottom: 10px;">
     </div>
     <div class="product-detail-info">
         <h1>{{ box.name }}</h1>
@@ -86,3 +88,5 @@
     </div>
 </div>
 {% endblock %}
+
+
