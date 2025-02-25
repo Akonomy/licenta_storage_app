@@ -57,16 +57,16 @@ def fetch_tasks_api(request):
         }
         if task.source_section:
             task_data['source_section'] = {
-                'name': task.source_section.name,
-                'type': task.source_section.type,
+                'name': task.source_section.nume_custom,
+                'type': task.source_section.tip_sectie,
             }
         else:
             task_data['source_section'] = None
 
         if task.target_section:
             task_data['target_section'] = {
-                'name': task.target_section.name,
-                'type': task.target_section.type,
+                'name': task.target_section.nume_custom,
+                'type': task.target_section.tip_sectie,
             }
         else:
             task_data['target_section'] = None
@@ -124,7 +124,7 @@ def update_robot_status_api(request):
 @authentication_classes([CustomJWTAuthentication])
 @permission_classes([IsAuthenticated])
 def get_box_details_api(request, box_code):
-    from inventory.models import Box  # Import model Box din aplicația inventory
+    from apps.inventory.models import Box  # Import model Box din aplicația inventory
     try:
         box = Box.objects.get(code=box_code)
         box_data = {
@@ -133,8 +133,8 @@ def get_box_details_api(request, box_code):
             'color': box.color,
             'price': box.price,
             'section': {
-                'name': box.section.name,
-                'type': box.section.type,
+                'name': box.section.nume_custom,
+                'type': box.section.tip_sectie,
             }
         }
         return JsonResponse({'box': box_data})
