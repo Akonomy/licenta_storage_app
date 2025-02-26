@@ -398,6 +398,158 @@ def update_queue_item_api(request):
 
 
 
+#-----------------<   CONTAINER  >-----------------------
+
+
+
+
+@api_view(['POST'])
+@authentication_classes([CustomJWTAuthentication])
+@permission_classes([IsAuthenticated])
+def add_container_api(request):
+    """
+    API pentru adăugarea unui container nou.
+    Așteaptă parametrii: code, color, symbol și opțional zone (codul zonei).
+    """
+    data = request.data
+    code = data.get('code')
+    color = data.get('color')
+    symbol = data.get('symbol')
+    zone_code = data.get('zone')  # opțional
+
+    if not all([code, color, symbol]):
+        return Response({"error": "Parametrii 'code', 'color' și 'symbol' sunt necesari."}, status=400)
+
+    # Dacă se specifică zona, o preluăm
+    zone = None
+    if zone_code:
+        zone = Zone.objects.filter(code=zone_code).first()
+        if not zone:
+            return Response({"error": "Zona cu codul specificat nu a fost găsită."}, status=404)
+    
+    # Creăm containerul
+    if Container.objects.filter(code=code).exists():
+        return Response({"error": "Un container cu acest cod există deja."}, status=400)
+    
+    try:
+        container = Container.objects.create(code=code, color=color, symbol=symbol, zone=zone)
+    except Exception as e:
+        return Response({"error": str(e)}, status=500)
+    
+    container_data = {
+        "code": container.code,
+        "color": container.get_color_display(),
+        "symbol": container.symbol,
+        "zone": container.zone.name if container.zone else None,
+        "status": container.get_status_display(),
+    }
+    return Response({"message": "Container adăugat cu succes.", "container": container_data}, status=201)
+
+
+@api_view(['PUT'])
+@authentication_classes([CustomJWTAuthentication])
+@permission_classes([IsAuthenticated])
+def modify_container_api(request, container_code):
+    """
+    API pentru modificarea unui container existent.
+    Acceptă parametrii opționali: color, symbol, zone (codul zonei).
+    """
+    container = get_object_or_404(Container, code=container_code)
+    data = request.data
+    color = data.get('color')
+    symbol = data.get('symbol')
+    zone_code = data.get('zone')  # opțional
+
+    if color:
+        container.color = color
+    if symbol:
+        container.symbol = symbol
+    if zone_code:
+        zone = Zone.objects.filter(code=zone_code).first()
+        if not zone:
+            return Response({"error": "Zona cu codul specificat nu a fost găsită."}, status=404)
+        container.zone = zone
+
+    container.save()
+    container_data = {
+        "code": container.code,
+        "color": container.get_color_display(),
+        "symbol": container.symbol,
+        "zone": container.zone.name if container.zone else None,
+        "status": container.get_status_display(),
+    }
+    return Response({"message": "Container actualizat cu succes.", "container": container_data})
+
+
+@api_view(['GET'])
+@authentication_classes([CustomJWTAuthentication])
+@permission_classes([IsAuthenticated])
+def check_container_api(request, container_code):
+    """
+    API pentru verificarea detaliilor unui container.
+    Returnează informații despre container.
+    """
+    container = get_object_or_404(Container, code=container_code)
+    container_data = {
+        "code": container.code,
+        "color": container.get_color_display(),
+        "symbol": container.symbol,
+        "status": container.get_status_display(),
+        "zone": container.zone.name if container.zone else None,
+        "virtual_box_code": container.virtual_box_code,
+        "created_at": container.created_at,
+        "updated_at": container.updated_at,
+    }
+    return Response({"container": container_data})
+
+
+@api_view(['POST'])
+@authentication_classes([CustomJWTAuthentication])
+@permission_classes([IsAuthenticated])
+def reset_container_api(request, container_code):
+    """
+    API pentru resetarea unui container.
+    Resetează containerul (setează status la free, elimină box-ul asociat, etc.).
+    """
+    container = get_object_or_404(Container, code=container_code)
+    container.reset()  # Metoda reset din model se ocupă de actualizare și creare de evenimente
+    container_data = {
+        "code": container.code,
+        "status": container.get_status_display(),
+    }
+    return Response({"message": "Container resetat cu succes.", "container": container_data})
+
+
+@api_view(['POST'])
+@authentication_classes([CustomJWTAuthentication])
+@permission_classes([IsAuthenticated])
+def change_container_zone_api(request, container_code):
+    """
+    API pentru schimbarea zonei unui container.
+    Așteaptă parametrul 'zone_code' pentru noua zonă.
+    """
+    container = get_object_or_404(Container, code=container_code)
+    zone_code = request.data.get('zone_code')
+    if not zone_code:
+        return Response({"error": "Parametrul 'zone_code' este necesar."}, status=400)
+    
+    new_zone = get_object_or_404(Zone, code=zone_code)
+    container.move_to_zone(new_zone)
+    container_data = {
+        "code": container.code,
+        "zone": container.zone.name if container.zone else None,
+    }
+    return Response({"message": "Zona containerului a fost actualizată.", "container": container_data})
+
+
+
+
+
+    #--------------------------< END >-------------------------------------------------
+
+
+    
+
         
 # Noua API view pentru logout (revocare token)
 from rest_framework.views import APIView

@@ -27,6 +27,17 @@ urlpatterns += [
     path('api/fetch_box_queue_api', views.fetch_box_queue_api, name='fetch_box_queue_api'),
 
 
+
+    path('api/container/add/', views.add_container_api, name='add_container_api'),
+    path('api/container/<str:container_code>/modify/', views.modify_container_api, name='modify_container_api'),
+    path('api/container/<str:container_code>/check/', views.check_container_api, name='check_container_api'),
+    path('api/container/<str:container_code>/reset/', views.reset_container_api, name='reset_container_api'),
+    path('api/container/<str:container_code>/change-zone/', views.change_container_zone_api, name='change_container_zone_api'),
+
+
+
+
+
     # JWT authentication endpoints
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
