@@ -12,7 +12,7 @@ urlpatterns = [
     path('messages/', views.robot_messages, name='robot_messages'),
     path('control/', views.control_panel, name='control_panel'),
 
-    path('queue_management/', views.queue_management,name='queue_management'),
+   # path('queue_management/', views.queue_management,name='queue_management'),
 
 
 ]
@@ -24,7 +24,7 @@ urlpatterns += [
     path('api/robot_status/update/', views.update_robot_status_api, name='update_robot_status_api'),
     path('api/boxes/<str:box_code>/', views.get_box_details_api, name='get_box_details_api'),
 
-    path('api/fetch_box_queue_api', views.fetch_box_queue_api, name='fetch_box_queue_api'),
+    #path('api/fetch_box_queue_api', views.fetch_box_queue_api, name='fetch_box_queue_api'),
 
 
     # JWT authentication endpoints

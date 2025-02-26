@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% load tz %}
+{% block content %}
+<style>
+  /* Stiluri specifice pentru container_detail */
+  .detail-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+  }
+  .detail-table th, .detail-table td {
+      padding: 8px;
+      text-align: left;
+      border: 1px solid #ccc;
+  }
+  .detail-table th {
+      background-color: #e0e0e0;
+  }
+  h2 {
+      color: #2a6496;
+      margin-top: 30px;
+  }
+</style>
+
+<h2>Detalii Container</h2>
+<table class="detail-table">
+  <tr>
+    <th>Parametru</th>
+    <th>Valoare</th>
+  </tr>
+  <tr>
+    <td>ID Container</td>
+    <td>{{ container.code }}</td>
+  </tr>
+  <tr>
+    <td>Culoare</td>
+    <td>{{ container.get_color_display }}</td>
+  </tr>
+  <tr>
+    <td>Simbol</td>
+    <td>{{ container.symbol }}</td>
+  </tr>
+  <tr>
+    <td>Status</td>
+    <td>{{ container.get_status_display }}</td>
+  </tr>
+  <tr>
+    <td>Zona</td>
+    <td>{% if container.zone %}{{ container.zone.name }}{% else %}N/A{% endif %}</td>
+  </tr>
+  <tr>
+    <td>Cod Virtual Cutie</td>
+    <td>{% if container.virtual_box_code %}{{ container.virtual_box_code }}{% else %}N/A{% endif %}</td>
+  </tr>
+  <tr>
+    <td>Data Creării</td>
+    <td>{{ container.created_at|timezone:"Europe/Bucharest" }}</td>
+  </tr>
+  <tr>
+    <td>Data Actualizării</td>
+    <td>{{ container.updated_at|timezone:"Europe/Bucharest" }}</td>
+  </tr>
+</table>
+
+{% if box %}
+  <h2>Detalii Cutie Asociată</h2>
+  <table class="detail-table">
+    <tr>
+      <th>Parametru</th>
+      <th>Valoare</th>
+    </tr>
+    <tr>
+      <td>ID Cutie</td>
+      <td>{{ box.code }}</td>
+    </tr>
+    <tr>
+      <td>Nume Cutie</td>
+      <td>{{ box.name }}</td>
+    </tr>
+    <tr>
+      <td>Preț Livrare</td>
+      <td>{{ box.price }}</td>
+    </tr>
+    <tr>
+      <td>Status</td>
+      <td>{{ box.get_status_display }}</td>
+    </tr>
+    <tr>
+      <td>Data Sosirii în Fabrică</td>
+      <td>{{ box.added_date|timezone:"Europe/Bucharest" }}</td>
+    </tr>
+    <tr>
+      <td>Data Vânzării</td>
+      <td>{% if box.sold_date %}{{ box.sold_date|timezone:"Europe/Bucharest" }}{% else %}N/A{% endif %}</td>
+    </tr>
+  </table>
+{% endif %}
+
+{% if orders %}
+  <h2>Detalii Comenzi Asociate</h2>
+  <table class="detail-table">
+    <tr>
+      <th>ID Comandă</th>
+      <th>User</th>
+      <th>Data Comenzii</th>
+      <th>Status</th>
+      <th>Total</th>
+      <th>Adresă Livrare</th>
+      <th>Data Ambalării</th>
+    </tr>
+    {% for order in orders %}
+    <tr>
+      <td>{{ order.id }}</td>
+      <td>{{ order.user.username }}</td>
+      <td>{{ order.ordered_date|timezone:"Europe/Bucharest" }}</td>
+      <td>{{ order.get_status_display }}</td>
+      <td>{{ order.total_amount }}</td>
+      <td>{{ order.county }}, {{ order.street }}{% if order.commune %}, {{ order.commune }}{% endif %}</td>
+      <td>{% if box %}{{ box.added_date|timezone:"Europe/Bucharest" }}{% else %}N/A{% endif %}</td>
+    </tr>
+    {% endfor %}
+  </table>
+{% endif %}
+
+<h2>Istoric Container</h2>
+{% if container_events %}
+  <table class="detail-table">
+    <tr>
+      <th>Tip Eveniment</th>
+      <th>Data Eveniment</th>
+      <th>De la Zona</th>
+      <th>Către Zona</th>
+      <th>ID Cutie Asociată</th>
+      <th>Note</th>
+    </tr>
+    {% for event in container_events %}
+    <tr>
+      <td>{{ event.get_event_type_display }}</td>
+      <td>{{ event.event_date|timezone:"Europe/Bucharest" }}</td>
+      <td>{% if event.from_zone %}{{ event.from_zone.name }}{% else %}N/A{% endif %}</td>
+      <td>{% if event.to_zone %}{{ event.to_zone.name }}{% else %}N/A{% endif %}</td>
+      <td>{% if event.box %}{{ event.box.code }}{% else %}N/A{% endif %}</td>
+      <td>{{ event.notes }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+{% else %}
+  <p>Nu există evenimente pentru acest container.</p>
+{% endif %}
+
+{% endblock %}

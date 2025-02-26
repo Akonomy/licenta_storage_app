@@ -14,7 +14,7 @@ from apps.accounts.authentication import CustomJWTAuthentication
 from apps.store_new.models import Order, OrderItem, Product, BoxQueue, DeliveryQueue
 
 
-from apps.inventory.models import Box, Section
+from apps.fizic_inventory.models import Container, Zone
 
 # Web interface views (rămân neschimbate)
 def inventory_home(request):
@@ -98,16 +98,27 @@ def update_task_status_api(request, task_id):
         task.save()
 
         if status == 'completed':
+            # Presupunem că task-urile de tip 'move_box', 'add_box' și 'remove_box'
+            # au fost actualizate pentru a utiliza Container și Zone din apps.fizic_inventory.
             if task.task_type == 'move_box' and task.box and task.source_section and task.target_section:
-                task.source_section.move_box(task.box, task.target_section)
+                # task.box este de fapt un Container (din fizic_inventory)
+                # task.target_section este de tip Zone (din fizic_inventory)
+                task.box.move_to_zone(task.target_section)
             elif task.task_type == 'add_box' and task.box and task.target_section:
-                task.target_section.add_box(task.box)
+                # Pentru 'add_box', se asociază containerul (task.box) cu zona țintă
+                task.box.zone = task.target_section
+                task.box.save()
+                task.target_section.update_occupancy()
             elif task.task_type == 'remove_box' and task.box and task.source_section:
-                task.box.remove_from_section()
+                # Pentru 'remove_box', se scoate containerul din zona de origine
+                task.box.zone = None
+                task.box.save()
+                task.source_section.update_occupancy()
 
         return JsonResponse({'message': 'Task status updated'})
     except Task.DoesNotExist:
         return JsonResponse({'error': 'Task not found'}, status=404)
+
 
 @api_view(['POST'])
 @authentication_classes([CustomJWTAuthentication])
@@ -126,27 +137,32 @@ def update_robot_status_api(request):
 
     return JsonResponse({'message': 'Robot status updated'})
 
+
 @api_view(['GET'])
 @authentication_classes([CustomJWTAuthentication])
 @permission_classes([IsAuthenticated])
 def get_box_details_api(request, box_code):
-    from apps.inventory.models import Box  # Import model Box din aplicația inventory
+    from apps.fizic_inventory.models import Container
     try:
-        box = Box.objects.get(code=box_code)
-        box_data = {
-            'code': box.code,
-            'name': box.name,
-            'color': box.color,
-            'price': box.price,
-            'section': {
-                'name': box.section.nume_custom,
-                'type': box.section.tip_sectie,
+        container = Container.objects.get(code=box_code)
+        zone_data = None
+        if container.zone:
+            zone_data = {
+                'code': container.zone.code,
+                'name': container.zone.name,
+                'type': container.zone.get_type_display(),
             }
+        container_data = {
+            'code': container.code,
+            'color': container.get_color_display(),
+            'symbol': container.symbol,
+            'status': container.get_status_display(),
+            'virtual_box_code': container.virtual_box_code,
+            'zone': zone_data,
         }
-        return JsonResponse({'box': box_data})
-    except Box.DoesNotExist:
-        return JsonResponse({'error': 'Box not found'}, status=404)
-
+        return JsonResponse({'box': container_data})
+    except Container.DoesNotExist:
+        return JsonResponse({'error': 'Container not found'}, status=404)
 
 
 
@@ -382,11 +398,7 @@ def update_queue_item_api(request):
 
 
 
-
-
-
-
-
+        
 # Noua API view pentru logout (revocare token)
 from rest_framework.views import APIView
 from rest_framework.response import Response

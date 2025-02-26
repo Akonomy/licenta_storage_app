@@ -3,16 +3,23 @@ import requests
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+
+# MODELE SPECIFICE (local): Order, OrderItem, Product
 from .models import Order, OrderItem, Product
+
+# MODELE EXTERNE – INVENTAR: Box, Section
 from apps.inventory.models import Box, Section
+
+# MODELE EXTERNE – ROBOT INTERFACE: Task
 from apps.robot_interface.models import Task
+
+# Alte modele externe (din apps.store_new)
 from apps.store_new.models import DeliveryQueue  # importăm modelul nou
-
-
-
 
 API_PRODUCTS_URL = "https://api.escuelajs.co/api/v1/products"
 
+
+#-------------CODE1: Views folosind doar modelele specifice (.models: Order, OrderItem, Product) -------------
 def fetch_api_products(page=1, limit=12):
     offset = (page - 1) * limit
     params = {'offset': offset, 'limit': limit}
@@ -154,142 +161,11 @@ def remove_from_cart(request, product_id):
     request.session['cart'] = cart
     return redirect('store_new:cart_view')
 
-
-
-@login_required
-def checkout(request):
-    cart = request.session.get('cart', {})
-    if not cart:
-        messages.error(request, 'Coșul este gol.')
-        return redirect('store_new:product_list')
-
-    total = sum(int(item['price']) * item['quantity'] for item in cart.values())
-    if total < 100:
-        messages.error(request, 'Comanda trebuie să fie de cel puțin 100 lei.')
-        return redirect('store_new:cart_view')
-
-    user = request.user
-    if user.coins < total:
-        messages.error(request, 'Nu ai suficiente monede. Joacă jocurile din apps.games pentru a câștiga mai multe.')
-        return redirect('games:start_game')
-
-    if request.method == 'POST':
-        county = request.POST.get('county')
-        street = request.POST.get('street')
-        commune = request.POST.get('commune', '')
-
-        # 1. Creăm comanda cu status inițial "confirmare" (in curs de confirmare)
-        order = Order.objects.create(
-            user=user,
-            total_amount=total,
-            county=county,
-            street=street,
-            commune=commune,
-            status='confirmare',  # noul status ce indică "în curs de confirmare"
-            waiting=True
-        )
-
-        # Determinăm codul regiunii pentru livrare
-        region_code = order.get_delivery_region_code()
-
-        # 2. Căutăm o cutie liberă în secțiunea de depozit
-        free_box = Box.objects.filter(section__tip_sectie='depozit', status='in_stoc').first()
-
-
-        if not free_box:
-            # Nu există cutii disponibile: creăm o intrare în coada de așteptare pentru cutii
-            from apps.store_new.models import BoxQueue  # import local pentru modelul BoxQueue
-            BoxQueue.objects.create(order=order)
-            messages.info(request, 'Nu există cutii libere disponibile. Comanda este în coada de așteptare pentru alocarea unei cutii.')
-        else:
-            # Alocăm cutia pentru comandă
-            order.package_box = free_box
-            free_box.status = 'sold'
-
-            # 3. Căutăm zona de livrare conform regiunii
-            delivery_section = None
-            if region_code in [1, 2, 3]:
-                # Pentru regiunile 1, 2 și 3, căutăm secțiunea ce conține mai întâi '1'
-                delivery_section = Section.objects.filter(tip_sectie='livrare', nume_custom__icontains='1').first()
-                if not delivery_section:
-                    # Dacă nu e găsită, încercăm cu '2'
-                    delivery_section = Section.objects.filter(tip_sectie='livrare', nume_custom__icontains='2').first()
-            else:
-                # Pentru restul regiunilor, căutăm secțiunea ce conține '4' și apoi '5'
-                delivery_section = Section.objects.filter(tip_sectie='livrare', nume_custom__icontains='4').first()
-                if not delivery_section:
-                    delivery_section = Section.objects.filter(tip_sectie='livrare', nume_custom__icontains='5').first()
-
-            if delivery_section:
-                # Dacă s-a găsit o zonă de livrare, se creează un task de mutare a cutiei
-                Task.objects.create(
-                    task_type='move_box',
-                    box=free_box,
-                    source_section=free_box.section,
-                    target_section=delivery_section,
-                    status='pending',
-                    created_by=user
-                )
-                # Actualizăm statusul și secțiunea cutiei
-                
-                free_box.status = 'sold'
-                free_box.save()
-
-                # Actualizăm comanda: statusul devine "livrare" (în curs de livrare)
-                order.status = 'livrare'
-                order.waiting = False
-            else:
-                # Dacă nu s-a găsit nicio zonă de livrare liberă, comanda trece la stadiul "procesare"
-                # (adică, a fost găsită cutia, dar nu zona de livrare)
-                order.status = 'procesare'
-                order.waiting = True
-
-                # Salvăm detalii minime pentru a gestiona ulterior coada de livrare
-                DeliveryQueue.objects.create(
-                    order=order,
-                    box=free_box,
-                    region_code=region_code
-                )
-                messages.info(request, 'Nu a fost găsită o zonă de livrare liberă. Comanda este în coada de așteptare pentru alocarea unei zone de livrare.')
-            order.save()
-
-            # 4. Creăm elementele comenzii
-            for pid, item in cart.items():
-                OrderItem.objects.create(
-                    order=order,
-                    product_title=item['title'],
-                    product_price=item['price'],
-                    quantity=item['quantity'],
-                    external_id=int(pid) if item.get('external') else None
-                )
-            order.calculate_total()
-
-            # 5. Deducem monedele din contul utilizatorului
-            user.coins -= total
-            user.save()
-
-        request.session['cart'] = {}
-        messages.success(request, 'Comanda a fost plasată. Vei primi actualizări privind stadiul comenzii.')
-        return redirect('store_new:order_detail', order_id=order.id)
-
-    total = sum(int(item['price']) * item['quantity'] for item in cart.values())
-    return render(request, 'store_new/checkout.html', {'total': total})
-
-@login_required
-def order_detail(request, order_id):
-    order = get_object_or_404(Order, id=order_id, user=request.user)
-    items = order.orderitem_set.all()
-    # Obținem cutia asociată cu comanda, dacă există
-    box = order.package_box  
-    return render(request, 'store_new/order_detail.html', {'order': order, 'items': items, 'box': box})
-
-
 @login_required
 def order_history(request):
     # Obținem toate comenzile utilizatorului, ordonate descrescător după dată
     orders = Order.objects.filter(user=request.user).order_by('-ordered_date')
     return render(request, 'store_new/order_history.html', {'orders': orders})
-
 
 @login_required
 def cancel_order(request, order_id):
@@ -354,27 +230,240 @@ def add_product(request):
         except Exception as e:
             messages.error(request, f"Eroare: {e}")
     return render(request, 'store_new/add_product.html')
+#-------------END CODE1-------------
 
+
+#-------------CODE2: Views care folosesc modelele din apps.inventory.models (Box, Section) -------------
+@login_required
+def order_detail(request, order_id):
+    """
+    Această view preia detaliile unei comenzi și folosește modelul Box (din apps.inventory.models)
+    prin atributul package_box al comenzii.
+    """
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    items = order.orderitem_set.all()
+    # Obținem cutia asociată cu comanda, dacă există
+    box = order.package_box  
+    return render(request, 'store_new/order_detail.html', {'order': order, 'items': items, 'box': box})
 
 def box_search(request):
+    """
+    View pentru căutarea unei cutii/container după cod.
+    Dacă se introduce un cod de 6 caractere, se caută o cutie (Box);
+    dacă se introduce un cod de 7 caractere, se caută un container din fizic_inventory.
+    """
     if request.method == 'POST':
-        box_code = request.POST.get('box_id')
-        if not box_code:
-            messages.error(request, "Te rog introdu un cod de cutie valid.")
+        code = request.POST.get('box_id')
+        if not code:
+            messages.error(request, "Te rog introdu un cod valid.")
             return redirect('store_new:box_search')
         # Redirecționăm către view-ul de detaliere, folosind parametrul 'box_code'
-        return redirect('store_new:box_detail', box_code=box_code)
+        return redirect('store_new:box_detail', box_code=code)
     return render(request, 'store_new/box_search.html')
 
 
 def box_detail(request, box_code):
-    # Căutăm cutia după cod (nu după id)
-    box = get_object_or_404(Box, code=box_code)
-    # Obținem istoricul comenzilor în care cutia a fost alocată
-    order_history = Order.objects.filter(package_box=box)
+    """
+    View pentru afișarea detaliilor.
     
-    context = {
-        'box': box,
-        'order_history': order_history,
-    }
-    return render(request, 'store_new/box_detail.html', context)
+    - Dacă 'box_code' are 6 caractere:
+      Caută și afișează detaliile unei cutii (Box) din apps.inventory.models,
+      inclusiv istoricul comenzilor în care a fost alocată cutia.
+      
+    - Dacă 'box_code' are 7 caractere:
+      Caută un container (din apps.fizic_inventory.models) și afișează informații detaliate:
+        * Datele containerului
+        * Evenimentele containerului
+        * Datele cutiei asociate (dacă există)
+        * Comenzile care au folosit acea cutie (dacă există)
+    """
+    if len(box_code) == 6:
+        # Tratare pentru codul de cutie (Box) – afişare standard
+        box = get_object_or_404(Box, code=box_code)
+        order_history = Order.objects.filter(package_box=box)
+        context = {
+            'box': box,
+            'order_history': order_history,
+        }
+        return render(request, 'store_new/box_detail.html', context)
+    elif len(box_code) == 7:
+        # Tratare pentru codul containerului din fizic_inventory
+        from apps.fizic_inventory.models import Container
+        container = get_object_or_404(Container, code=box_code)
+        container_events = container.events.all()
+        # Dacă containerul are asociată o cutie, se caută și comenzile aferente
+        box = container.box
+        orders = Order.objects.filter(package_box=box) if box else None
+        context = {
+            'container': container,
+            'container_events': container_events,
+            'box': box,
+            'orders': orders,
+        }
+        return render(request, 'store_new/container_detail.html', context)
+    else:
+        messages.error(request, "Codul introdus nu este valid.")
+        return redirect('store_new:box_search')
+
+
+@login_required
+def checkout(request):
+    """
+    View pentru plasarea unei comenzi.
+    Această funcție utilizează:
+      - Modelele locale (Order, OrderItem) pentru crearea comenzii și elementelor de comandă.
+      - Modelele din apps.inventory.models (Box, Section) pentru alocarea unui pachet.
+      - Modelele din apps.fizic_inventory.models (Container, Zone) pentru asocierea containerului.
+      - Modelul Task din apps.robot_interface.models pentru crearea unui task de mutare a containerului.
+      - Modelul DeliveryQueue din apps.store_new.models pentru gestionarea cozii de așteptare.
+    """
+
+    #----------BLOCK 1: Verificări inițiale ----------
+    cart = request.session.get('cart', {})
+    if not cart:
+        messages.error(request, 'Coșul este gol.')
+        return redirect('store_new:product_list')
+
+    total = sum(int(item['price']) * item['quantity'] for item in cart.values())
+    if total < 100:
+        messages.error(request, 'Comanda trebuie să fie de cel puțin 100 lei.')
+        return redirect('store_new:cart_view')
+
+    user = request.user
+    if user.coins < total:
+        messages.error(request, 'Nu ai suficiente monede. Joacă jocurile din apps.games pentru a câștiga mai multe.')
+        return redirect('games:start_game')
+    #----------END BLOCK 1----------
+
+    if request.method == 'POST':
+        #----------BLOCK 2: Extracția datelor din formular ----------
+        county = request.POST.get('county')
+        street = request.POST.get('street')
+        commune = request.POST.get('commune', '')
+        #----------END BLOCK 2----------
+
+        #----------BLOCK 3: Crearea inițială a comenzii ----------
+        order = Order.objects.create(
+            user=user,
+            total_amount=total,
+            county=county,
+            street=street,
+            commune=commune,
+            status='confirmare',  # inițial: în curs de confirmare
+            waiting=True
+        )
+        region_code = order.get_delivery_region_code()
+        #----------END BLOCK 3----------
+
+        #----------BLOCK 4: Alocarea unui pachet pentru comandă ----------
+        free_box = Box.objects.filter(section__tip_sectie='depozit', status='in_stoc').first()
+        if not free_box:
+            from apps.store_new.models import BoxQueue  # import local pentru BoxQueue
+            BoxQueue.objects.create(order=order)
+            messages.info(request, 'Nu există pachete libere disponibile. Comanda este în coada de așteptare pentru alocarea unui pachet.')
+        else:
+            order.package_box = free_box
+            free_box.status = 'sold'
+            free_box.save()
+        #----------END BLOCK 4----------
+
+        #----------BLOCK 5: Asocierea containerului și crearea task-ului ----------
+        if free_box:
+            # Importăm Container și Zone din apps.fizic_inventory.models
+            from apps.fizic_inventory.models import Container, Zone
+
+            # Stabilim litera dorită: prima literă din numele pachetului (dacă există)
+            desired_letter = free_box.name[0].upper() if free_box.name else None
+
+            # Căutăm un container cu aceeași culoare (și, opțional, cu aceeași literă)
+            container_qs = Container.objects.filter(
+                status='free',
+                box__isnull=True,
+                color=free_box.color
+            )
+            if desired_letter:
+                container = container_qs.filter(symbol=desired_letter).first()
+            else:
+                container = container_qs.first()
+
+            # Dacă nu s-a găsit, urmăm prioritățile: simple, red, green, blue
+            if not container:
+                for priority_color in ['simple', 'red', 'green', 'blue']:
+                    container = Container.objects.filter(
+                        status='free',
+                        box__isnull=True,
+                        color=priority_color
+                    ).first()
+                    if container:
+                        break
+
+            if container:
+                # Asociem containerul cu pachetul și actualizăm statusul acestuia
+                container.box = free_box
+                container.status = 'assigned'
+                container.save()
+
+                # Determinăm zona țintă de livrare pe baza regiunii
+                target_zone = None
+                if region_code in [1, 2, 3]:
+                    target_zone = Zone.objects.filter(name__icontains='Livrare_1', type='livrare').first()
+                    if not target_zone:
+                        target_zone = Zone.objects.filter(name__icontains='Livrare_2', type='livrare').first()
+                else:
+                    target_zone = Zone.objects.filter(name__icontains='Livrare_2', type='livrare').first()
+                    if not target_zone:
+                        target_zone = Zone.objects.filter(name__icontains='Livrare_3', type='livrare').first()
+
+                # Dacă nu se găsește nicio zonă conform preferințelor, alegem totuși Livrare_1 sau Livrare_2
+                if not target_zone:
+                    target_zone = Zone.objects.filter(name__icontains='Livrare_1', type='livrare').first() or \
+                                  Zone.objects.filter(name__icontains='Livrare_2', type='livrare').first()
+
+                # Creăm un task pentru mutarea containerului (nu a pachetului)
+                Task.objects.create(
+                    task_type='move_box',  # task pentru container
+                    box=container,  # câmpul "box" din Task se referă acum la container
+                    source_section=container.zone,  # zona curentă a containerului
+                    target_section=target_zone,  # zona țintă determinată
+                    status='pending',
+                    created_by=user
+                )
+
+                order.status = 'livrare'
+                order.waiting = False
+            else:
+                # Dacă nu se găsește un container potrivit, se adaugă comanda în coada de așteptare pentru asocierea containerului
+                from apps.store_new.models import DeliveryQueue  # import local pentru DeliveryQueue
+                DeliveryQueue.objects.create(
+                    order=order,
+                    box=free_box,
+                    region_code=region_code
+                )
+                messages.info(request, 'Nu a fost găsit un container potrivit. Comanda este în coada de așteptare pentru asocierea containerului.')
+            order.save()
+        #----------END BLOCK 5----------
+
+        #----------BLOCK 6: Crearea elementelor comenzii și actualizarea contului utilizatorului ----------
+        for pid, item in cart.items():
+            OrderItem.objects.create(
+                order=order,
+                product_title=item['title'],
+                product_price=item['price'],
+                quantity=item['quantity'],
+                external_id=int(pid) if item.get('external') else None
+            )
+        order.calculate_total()
+        user.coins -= total
+        user.save()
+        #----------END BLOCK 6----------
+
+        #----------BLOCK 7: Finalizarea procesului de comandă ----------
+        request.session['cart'] = {}
+        messages.success(request, 'Comanda a fost plasată. Vei primi actualizări privind stadiul comenzii.')
+        return redirect('store_new:order_detail', order_id=order.id)
+        #----------END BLOCK 7----------
+
+    #----------BLOCK 8: Renderizarea paginii de checkout pentru cererile GET ----------
+    total = sum(int(item['price']) * item['quantity'] for item in cart.values())
+    return render(request, 'store_new/checkout.html', {'total': total})
+    #----------END BLOCK 8----------

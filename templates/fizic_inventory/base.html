@@ -171,12 +171,14 @@ table tr:nth-child(odd) {
 <body>
     <!-- Bara de navigare -->
     <div class="navbar">
+        <a href="{% url 'home' %}">🛖 Autostorage</a>
         <a href="{% url 'fizic_inventory:home' %}">🏠 Home</a>
         <a href="{% url 'fizic_inventory:container_list' %}">📦 Containers</a>
         <a href="{% url 'fizic_inventory:zone_list' %}">📋 Zones</a>
         <a href="{% url 'fizic_inventory:add_box' %}">➕ Add Container</a>
         <a href="{% url 'fizic_inventory:add_zone' %}">➕ Add Zone</a>
         <a href="{% url 'fizic_inventory:check_box' %}">🔍 Check Container</a>
+
     </div>
     
     <div class="container">

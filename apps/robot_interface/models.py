@@ -4,7 +4,7 @@
 
 from django.db import models
 from django.contrib.auth import get_user_model
-from apps.inventory.models import Box, Section
+from apps.fizic_inventory.models import Container, Zone
 
 User = get_user_model()
 
@@ -32,9 +32,9 @@ class Task(models.Model):
     status = models.CharField(max_length=20, choices=TASK_STATUS_CHOICES, default='pending')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    box = models.ForeignKey(Box, null=True, blank=True, on_delete=models.SET_NULL)
-    source_section = models.ForeignKey(Section, null=True, blank=True, related_name='source_tasks', on_delete=models.SET_NULL)
-    target_section = models.ForeignKey(Section, null=True, blank=True, related_name='target_tasks', on_delete=models.SET_NULL)
+    box = models.ForeignKey(Container, null=True, blank=True, on_delete=models.SET_NULL)
+    source_section = models.ForeignKey(Zone, null=True, blank=True, related_name='source_tasks', on_delete=models.SET_NULL)
+    target_section = models.ForeignKey(Zone, null=True, blank=True, related_name='target_tasks', on_delete=models.SET_NULL)
     custom_action = models.CharField(max_length=255, blank=True, null=True)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
 
