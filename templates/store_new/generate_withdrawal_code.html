@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Generare Cod pentru Withdraw</h2>
+<form method="post">
+    {% csrf_token %}
+    <label for="uses">Număr utilizări:</label>
+    <input type="number" name="uses" id="uses" required>
+    <br><br>
+    <label for="coins_per_use">Coins multiply:</label>
+    <input type="number" name="coins_per_use" id="coins_per_use" required>
+    <br><br>
+    <label for="max_withdrawal">Max Withdrawal:</label>
+    <input type="number" name="max_withdrawal" id="max_withdrawal" required>
+    <br><br>
+    <button type="submit">Generate</button>
+</form>
+{% if generated_code %}
+  <h3>Cod generat: <span style="color: green;">{{ generated_code }}</span></h3>
+{% endif %}
+{% endblock %}

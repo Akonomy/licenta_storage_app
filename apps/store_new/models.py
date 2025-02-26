@@ -183,3 +183,53 @@ class DeliveryQueue(models.Model):
     def __str__(self):
         return f"DeliveryQueue - Order {self.order.id} (Box {self.box.id}) pentru regiunea {self.region_code}"
 
+
+
+
+
+
+
+
+import random
+import string
+from django.db import models
+
+def generate_random_code():
+    """Generează un cod de 3 caractere (majuscule și cifre)."""
+    return ''.join(random.choices(string.ascii_uppercase + string.digits, k=3))
+
+class WithdrawalCoinCode(models.Model):
+    code = models.CharField(max_length=3, unique=True, help_text="Cod generat de 3 caractere")
+    total_amount = models.PositiveIntegerField(help_text="Total coins disponibile (uses * coins_per_use + 1)")
+    max_withdrawal = models.PositiveIntegerField(help_text="Valoarea maximă ce se poate extrage la fiecare redeem")
+
+    def redeem(self, user):
+        """
+        Realizează redeem pentru cod:
+          - Dacă total_amount >= max_withdrawal:
+              scade max_withdrawal din total_amount,
+              adaugă max_withdrawal la user.coins,
+              returnează (extracția, None).
+          - Dacă total_amount < max_withdrawal:
+              adaugă total_amount la user.coins,
+              șterge codul din baza de date,
+              returnează (extracția, mesaj de expirare).
+        """
+        if self.total_amount >= self.max_withdrawal:
+            amount = self.max_withdrawal
+            self.total_amount -= self.max_withdrawal
+            self.save()
+            user.coins += amount
+            user.save()
+            return amount, None
+        else:
+            # Fonduri insuficiente pentru o extragere completă – codul expiră
+            amount = self.total_amount
+            user.coins += amount
+            user.save()
+            self.delete()
+            return amount, "Cod expirat, cere de la admin alt cod."
+
+    def __str__(self):
+        return self.code
+

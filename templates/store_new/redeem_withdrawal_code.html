@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<style>
+  /* Stil pentru secțiunea de mesaje */
+  .messages {
+      list-style: none;
+      padding: 0;
+      margin-bottom: 20px;
+  }
+  .messages li {
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 4px;
+  }
+  .messages li.info {
+      background-color: #e7f3fe;
+      color: #31708f;
+      border: 1px solid #bce8f1;
+  }
+  .messages li.success {
+      background-color: #dff0d8;
+      color: #3c763d;
+      border: 1px solid #d6e9c6;
+  }
+  .messages li.error {
+      background-color: #f2dede;
+      color: #a94442;
+      border: 1px solid #ebccd1;
+  }
+</style>
+
+<h2>Redeem Coin Code</h2>
+
+{# Afișează mesajele (dacă există) #}
+{% if messages %}
+<ul class="messages">
+  {% for message in messages %}
+    <li class="{{ message.tags }}">{{ message }}</li>
+  {% endfor %}
+</ul>
+{% endif %}
+
+<form method="post">
+    {% csrf_token %}
+    <label for="code">Introdu codul:</label>
+    <input type="text" name="code" id="code" maxlength="3" required>
+    <br><br>
+    <button type="submit">Redeem</button>
+</form>
+
+<br>
+<a href="{% url 'store_new:product_list' %}">Înapoi la Magazin</a>
+{% endblock %}

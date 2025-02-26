@@ -1,9 +1,10 @@
 import random
+import string
 import requests
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 
+from django.contrib.auth.decorators import login_required, user_passes_test
 # MODELE SPECIFICE (local): Order, OrderItem, Product
 from .models import Order, OrderItem, Product
 
@@ -467,3 +468,76 @@ def checkout(request):
     total = sum(int(item['price']) * item['quantity'] for item in cart.values())
     return render(request, 'store_new/checkout.html', {'total': total})
     #----------END BLOCK 8----------
+
+
+
+
+
+
+import random
+import string
+
+
+from .models import WithdrawalCoinCode
+
+def generate_random_code_3():
+    """Generează un cod de 3 caractere (majuscule și cifre)."""
+    return ''.join(random.choices(string.ascii_uppercase + string.digits, k=3))
+
+@login_required
+@user_passes_test(lambda u: u.has_page_access('admin'))
+def generate_withdrawal_code(request):
+    """
+    Pagina de generare a unui cod de withdraw.
+    Administratorul poate introduce numărul de utilizări (uses), valoarea coins per utilizare,
+    și valoarea maximă ce se poate extrage (max_withdrawal).
+    Total_amount se calculează ca: (uses * coins_per_use) + 1.
+    """
+    generated_code = None
+    if request.method == 'POST':
+        uses = request.POST.get('uses')
+        coins_per_use = request.POST.get('coins_per_use')
+        max_withdrawal = request.POST.get('max_withdrawal')
+        try:
+            uses = int(uses)
+            coins_per_use = int(coins_per_use)
+            max_withdrawal = int(max_withdrawal)
+        except (ValueError, TypeError):
+            messages.error(request, "Valorile trebuie să fie numere.")
+            return redirect('store_new:generate_withdrawal_code')
+        
+        total_amount = uses * coins_per_use + 1  # plus 1 pentru a fi sigur că totalul > withdrawal
+        # Generăm un cod unic
+        while True:
+            code = generate_random_code_3()
+            if not WithdrawalCoinCode.objects.filter(code=code).exists():
+                break
+
+        coin_code = WithdrawalCoinCode.objects.create(code=code, total_amount=total_amount, max_withdrawal=max_withdrawal)
+        generated_code = coin_code.code
+        messages.success(request, f"Cod generat: {generated_code}. Total amount: {total_amount}, Max withdrawal: {max_withdrawal}")
+    context = {
+        'generated_code': generated_code,
+    }
+    return render(request, 'store_new/generate_withdrawal_code.html', context)
+
+@login_required
+def redeem_withdrawal_code(request):
+    """
+    Pagina pentru redeem codul de withdraw.
+    Utilizatorul introduce codul; dacă acesta este valid, se extrage suma:
+      - Dacă total_amount >= max_withdrawal: se extrage max_withdrawal.
+      - Dacă total_amount < max_withdrawal: se extrage tot ce rămâne, codul expiră și se șterge.
+    """
+    if request.method == 'POST':
+        input_code = request.POST.get('code', '').strip().upper()
+        coin_code = WithdrawalCoinCode.objects.filter(code=input_code).first()
+        if not coin_code:
+            messages.error(request, "Cod invalid.")
+            return redirect('store_new:redeem_withdrawal_code')
+        extracted, expired_msg = coin_code.redeem(request.user)
+        if expired_msg:
+            messages.info(request, expired_msg)
+        messages.success(request, f"Ai primit {extracted} coins!")
+        return redirect('store_new:cart_view')
+    return render(request, 'store_new/redeem_withdrawal_code.html')

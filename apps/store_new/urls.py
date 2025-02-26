@@ -54,8 +54,8 @@ urlpatterns = [
 
 
 
-
-
+    path('coin/generate/', views.generate_withdrawal_code, name='generate_withdrawal_code'),
+    path('coin/redeem/', views.redeem_withdrawal_code, name='redeem_withdrawal_code'),
 
 
 
