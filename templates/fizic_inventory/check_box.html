@@ -1,0 +1,24 @@
+{% extends "fizic_inventory/base.html" %}
+
+{% block title %}Check Container{% endblock %}
+
+{% block content %}
+<h1>Check Container</h1>
+<form method="post">
+    {% csrf_token %}
+    <label for="code">Container Code:</label>
+    <input type="text" name="code" id="code" required>
+    <input type="submit" value="Check">
+</form>
+
+{% if container %}
+    <h2>Container Details</h2>
+    <p><strong>Code:</strong> {{ container.code }}</p>
+    <p><strong>Color:</strong> {{ container.get_color_display }}</p>
+    <p><strong>Symbol:</strong> {{ container.symbol }}</p>
+    <p><strong>Status:</strong> {{ container.get_status_display }}</p>
+    <p><strong>Zone:</strong> {% if container.zone %}{{ container.zone.name }}{% else %}None{% endif %}</p>
+    <p><strong>Box:</strong> {% if container.box %}{{ container.box }}{% else %}None{% endif %}</p>
+    <p><strong>Virtual Box Code:</strong> {{ container.virtual_box_code|default:"None" }}</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "fizic_inventory/base.html" %}
+
+{% block title %}Zone List{% endblock %}
+
+{% block content %}
+<h1>Zone List</h1>
+<a href="{% url 'fizic_inventory:reset_zone_defaults' %}" class="btn btn-danger">Reset Zone Defaults</a>
+<table>
+    <thead>
+        <tr>
+            <th>Code</th>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Capacity</th>
+            <th>Current Occupancy</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for zone in zones %}
+        <tr>
+            <td>{{ zone.code }}</td>
+            <td>{{ zone.name }}</td>
+            <td>{{ zone.get_type_display }}</td>
+            <td>{{ zone.capacity }}</td>
+            <td>{{ zone.current_occupancy }}</td>
+            <td>
+                <a href="{% url 'fizic_inventory:zone_detail' zone.code %}" class="btn">View</a>
+                <a href="{% url 'fizic_inventory:edit_zone' zone.code %}" class="btn">Edit</a>
+                <a href="{% url 'fizic_inventory:clear_zone' zone.code %}" class="btn btn-danger">Clear Zone</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6">No zones found.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

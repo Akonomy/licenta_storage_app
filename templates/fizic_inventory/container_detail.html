@@ -1,0 +1,47 @@
+{% extends "fizic_inventory/base.html" %}
+
+{% block title %}Container Detail{% endblock %}
+
+{% block content %}
+<h1>Container Detail - {{ container.code }}</h1>
+<p><strong>Color:</strong> {{ container.get_color_display }}</p>
+<p><strong>Symbol:</strong> {{ container.symbol }}</p>
+<p><strong>Status:</strong> {{ container.get_status_display }}</p>
+<p><strong>Zone:</strong> {% if container.zone %}{{ container.zone.name }}{% else %}None{% endif %}</p>
+<p><strong>Box:</strong> {% if container.box %}{{ container.box }}{% else %}None{% endif %}</p>
+<p><strong>Virtual Box Code:</strong> {{ container.virtual_box_code|default:"None" }}</p>
+<a href="{% url 'fizic_inventory:edit_container' container.code %}" class="btn">Edit Container</a>
+<a href="{% url 'fizic_inventory:add_virtual_box' container.code %}" class="btn btn-success">Add Virtual Box</a>
+<a href="{% url 'fizic_inventory:move_container' container.code %}" class="btn">Move Container</a>
+<a href="{% url 'fizic_inventory:reset_container' container.code %}" class="btn btn-danger">Reset Container</a>
+
+<h2>Event History</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Event Type</th>
+            <th>Date</th>
+            <th>From Zone</th>
+            <th>To Zone</th>
+            <th>Box</th>
+            <th>Notes</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for event in events %}
+        <tr>
+            <td>{{ event.get_event_type_display }}</td>
+            <td>{{ event.event_date }}</td>
+            <td>{% if event.from_zone %}{{ event.from_zone.name }}{% else %}--{% endif %}</td>
+            <td>{% if event.to_zone %}{{ event.to_zone.name }}{% else %}--{% endif %}</td>
+            <td>{% if event.box %}{{ event.box }}{% else %}--{% endif %}</td>
+            <td>{{ event.notes|default:"--" }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6">No events found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

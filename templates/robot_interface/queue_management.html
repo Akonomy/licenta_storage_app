@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestionarea Cozilor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        th, td {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        .action-btn {
+            padding: 4px 8px;
+            background-color: #d9534f;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        .action-btn:hover {
+            background-color: #c9302c;
+        }
+        .update-btn {
+            padding: 8px 16px;
+            background-color: #5cb85c;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        .update-btn:hover {
+            background-color: #4cae4c;
+        }
+        .msg {
+            padding: 10px;
+            background-color: #e7f3fe;
+            border: 1px solid #b3d4fc;
+            margin-bottom: 20px;
+            color: #31708f;
+        }
+    </style>
+</head>
+<body>
+    <h1>Gestionarea Cozilor</h1>
+
+    <!-- Buton pentru actualizarea automată a cozilor -->
+    <form method="post" action="">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="update">
+        <button type="submit" class="update-btn">Reîmprospătează Cozile</button>
+    </form>
+
+    <h2>Coada pentru Box-uri</h2>
+    {% if box_queue %}
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>ID Comandă</th>
+                <th>Data Creării</th>
+                <th>Acțiuni</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in box_queue %}
+            <tr>
+                <td>{{ item.id }}</td>
+                <td>{{ item.order.id }}</td>
+                <td>{{ item.created_at }}</td>
+                <td>
+                    <form method="post" action="" style="display:inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="item_type" value="box">
+                        <input type="hidden" name="item_id" value="{{ item.id }}">
+                        <input type="hidden" name="action" value="delete">
+                        <button type="submit" class="action-btn">Șterge</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>Nu există elemente în coada pentru box-uri.</p>
+    {% endif %}
+
+    <h2>Coada pentru Livrări</h2>
+    {% if delivery_queue %}
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>ID Comandă</th>
+                <th>ID Box</th>
+                <th>Cod Regiune</th>
+                <th>Data Creării</th>
+                <th>Acțiuni</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in delivery_queue %}
+            <tr>
+                <td>{{ item.id }}</td>
+                <td>{{ item.order.id }}</td>
+                <td>{{ item.box.id }}</td>
+                <td>{{ item.region_code }}</td>
+                <td>{{ item.created_at }}</td>
+                <td>
+                    <form method="post" action="" style="display:inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="item_type" value="delivery">
+                        <input type="hidden" name="item_id" value="{{ item.id }}">
+                        <input type="hidden" name="action" value="delete">
+                        <button type="submit" class="action-btn">Șterge</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>Nu există elemente în coada pentru livrări.</p>
+    {% endif %}
+</body>
+</html>

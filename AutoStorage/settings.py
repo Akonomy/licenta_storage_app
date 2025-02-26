@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'apps.robot_interface',
     'apps.inventory',
     'apps.store_new',
+    'apps.fizic_inventory',
 
 
    

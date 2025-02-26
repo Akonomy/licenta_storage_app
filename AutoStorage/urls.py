@@ -33,6 +33,7 @@ urlpatterns = [
     path('games/', include('apps.games.urls',namespace='games')),
     path('storeold/', include('apps.store.urls')),
     path('store/', include('apps.store_new.urls', namespace='store_new')),
+    path('fizic_inventory/', include('apps.fizic_inventory.urls')),
 
     
 ]

@@ -1,0 +1,28 @@
+{% extends "fizic_inventory/base.html" %}
+
+{% block title %}Add Container{% endblock %}
+
+{% block content %}
+<h1>Add Container</h1>
+<form method="post">
+    {% csrf_token %}
+    <label for="code">Container Code (optional):</label>
+    <input type="text" name="code" id="code" placeholder="Leave empty for auto-generation">
+    
+    <label for="color">Color:</label>
+    <select name="color" id="color" class="color-select">
+        {% for value, display in container_color_choices %}
+            <option value="{{ value }}">{{ display }}</option>
+        {% endfor %}
+    </select>
+    
+    <label for="symbol">Symbol:</label>
+    <select name="symbol" id="symbol">
+        {% for value, display in container_symbol_choices %}
+            <option value="{{ value }}">{{ display }}</option>
+        {% endfor %}
+    </select>
+    
+    <input type="submit" value="Add Container">
+</form>
+{% endblock %}

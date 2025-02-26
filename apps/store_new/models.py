@@ -5,6 +5,8 @@ from apps.inventory.models import Box  # Pentru a lega comanda de o cutie
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
 
+from decimal import Decimal
+
 # Modelul pentru produse adăugate manual (fallback sau custom)
 class Product(models.Model):
     title = models.CharField(max_length=255)
@@ -110,11 +112,14 @@ class Order(models.Model):
     def __str__(self):
         return f"Order {self.id} by {self.user.username} ({self.get_status_display()})"
 
+
+
     def calculate_total(self):
-        total = sum(item.get_total_price() for item in self.orderitem_set.all())
+        total = sum(Decimal(item.get_total_price()) for item in self.orderitem_set.all())
         self.total_amount = total
         self.save()
         return total
+
 
     def get_delivery_region_code(self):
         """

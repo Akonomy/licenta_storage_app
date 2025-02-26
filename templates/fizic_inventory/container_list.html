@@ -1,0 +1,43 @@
+{% extends "fizic_inventory/base.html" %}
+
+{% block title %}Container List{% endblock %}
+
+{% block content %}
+<h1>Container List</h1>
+<a href="{% url 'fizic_inventory:add_box' %}" class="btn btn-success">Add Container</a>
+<a href="{% url 'fizic_inventory:reset_container_defaults' %}" class="btn btn-danger">Reset All Containers</a>
+<table>
+    <thead>
+        <tr>
+            <th>Code</th>
+            <th>Color</th>
+            <th>Symbol</th>
+            <th>Status</th>
+            <th>Zone</th>
+            <th>Box</th>
+            <th>Virtual Box Code</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for container in containers %}
+        <tr>
+            <td>{{ container.code }}</td>
+            <td>{{ container.get_color_display }}</td>
+            <td>{{ container.symbol }}</td>
+            <td>{{ container.get_status_display }}</td>
+            <td>{% if container.zone %}{{ container.zone.name }}{% else %}--{% endif %}</td>
+            <td>{% if container.box %}{{ container.box }}{% else %}--{% endif %}</td>
+            <td>{{ container.virtual_box_code|default:"--" }}</td>
+            <td>
+                <a href="{% url 'fizic_inventory:container_detail' container.code %}" class="btn">View</a>
+                <a href="{% url 'fizic_inventory:edit_container' container.code %}" class="btn">Edit</a>
+                <a href="{% url 'fizic_inventory:reset_container' container.code %}" class="btn btn-danger">Reset</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="8">No containers found.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends "fizic_inventory/base.html" %}
+
+{% block title %}Add Virtual Box to Container{% endblock %}
+
+{% block content %}
+<h1>Add Virtual Box Code to Container - {{ container.code }}</h1>
+<form method="post">
+    {% csrf_token %}
+    <label for="virtual_box_code">Virtual Box Code:</label>
+    <input type="text" name="virtual_box_code" id="virtual_box_code" required>
+    <input type="submit" value="Add Virtual Box">
+</form>
+{% endblock %}

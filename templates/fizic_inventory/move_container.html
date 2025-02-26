@@ -1,0 +1,17 @@
+{% extends "fizic_inventory/base.html" %}
+
+{% block title %}Move Container{% endblock %}
+
+{% block content %}
+<h1>Move Container - {{ container.code }}</h1>
+<form method="post">
+    {% csrf_token %}
+    <label for="zona_id">Select New Zone:</label>
+    <select name="zona_id" id="zona_id">
+        {% for zone in zonas %}
+        <option value="{{ zone.id }}">{{ zone.name }} ({{ zone.get_type_display }})</option>
+        {% endfor %}
+    </select>
+    <input type="submit" value="Move">
+</form>
+{% endblock %}

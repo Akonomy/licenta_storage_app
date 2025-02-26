@@ -1,0 +1,28 @@
+{% extends "fizic_inventory/base.html" %}
+
+{% block title %}Edit Container{% endblock %}
+
+{% block content %}
+<h1>Edit Container - {{ container.code }}</h1>
+<form method="post">
+    {% csrf_token %}
+    <label for="color">Color:</label>
+    <select name="color" id="color" class="color-select">
+        {% for value, display in container_color_choices %}
+            <option value="{{ value }}" {% if container.color == value %}selected{% endif %}>{{ display }}</option>
+        {% endfor %}
+    </select>
+    
+    <label for="symbol">Symbol:</label>
+    <select name="symbol" id="symbol">
+        {% for value, display in container_symbol_choices %}
+            <option value="{{ value }}" {% if container.symbol == value %}selected{% endif %}>{{ display }}</option>
+        {% endfor %}
+    </select>
+    
+    <label for="virtual_box_code">Virtual Box Code:</label>
+    <input type="text" name="virtual_box_code" id="virtual_box_code" value="{{ container.virtual_box_code }}">
+    
+    <input type="submit" value="Update Container">
+</form>
+{% endblock %}
