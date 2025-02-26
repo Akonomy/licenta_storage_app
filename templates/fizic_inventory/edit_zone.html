@@ -11,8 +11,8 @@
     
     <label for="type">Type:</label>
     <select name="type" id="type">
-        {% for value, display in zone._meta.get_field('type').choices %}
-        <option value="{{ value }}" {% if zone.type == value %}selected{% endif %}>{{ display }}</option>
+        {% for value, display in zone_type_choices %}
+            <option value="{{ value }}" {% if zone.type == value %}selected{% endif %}>{{ display }}</option>
         {% endfor %}
     </select>
     

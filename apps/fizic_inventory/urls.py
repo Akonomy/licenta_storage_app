@@ -20,6 +20,7 @@ urlpatterns = [
 
     # Zone URLs (rutele statice sunt listate mai întâi)
     path('zones/', views.zone_list, name='zone_list'),
+    path('zone/add/', views.add_zone_view, name='add_zone'),
     path('zone/reset_defaults/', views.reset_zone_defaults_view, name='reset_zone_defaults'),
     path('zone/<str:code>/edit/', views.edit_zone_view, name='edit_zone'),
     path('zone/<str:code>/clear/', views.clear_zone_view, name='clear_zone'),

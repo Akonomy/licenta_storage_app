@@ -2,9 +2,46 @@
 
 {% block title %}Zone List{% endblock %}
 
+{% block extra_css %}
+<style>
+    /* Stiluri suplimentare pentru butoane - asigură vizibilitatea lor permanentă */
+    .btn {
+        display: inline-block;
+        padding: 8px 12px;
+        background-color: #007BFF;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 4px;
+        margin: 2px;
+        transition: background-color 0.3s ease;
+        opacity: 1 !important;  /* Forțează opacitatea la 1 */
+    }
+    .btn:hover {
+        background-color: #0056b3;
+    }
+    .btn-danger {
+        background-color: #d9534f;
+        opacity: 1 !important;
+    }
+    .btn-danger:hover {
+        background-color: #c9302c;
+    }
+    .btn-success {
+        background-color: #5cb85c;
+        opacity: 1 !important;
+    }
+    .btn-success:hover {
+        background-color: #4cae4c;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <h1>Zone List</h1>
-<a href="{% url 'fizic_inventory:reset_zone_defaults' %}" class="btn btn-danger">Reset Zone Defaults</a>
+<div style="margin-bottom: 20px;">
+    <a href="{% url 'fizic_inventory:add_zone' %}" class="btn btn-success">Add Zone</a>
+    <a href="{% url 'fizic_inventory:reset_zone_defaults' %}" class="btn btn-danger">Reset All Zones</a>
+</div>
 <table>
     <thead>
         <tr>
@@ -25,13 +62,15 @@
             <td>{{ zone.capacity }}</td>
             <td>{{ zone.current_occupancy }}</td>
             <td>
-                <a href="{% url 'fizic_inventory:zone_detail' zone.code %}" class="btn">View</a>
-                <a href="{% url 'fizic_inventory:edit_zone' zone.code %}" class="btn">Edit</a>
-                <a href="{% url 'fizic_inventory:clear_zone' zone.code %}" class="btn btn-danger">Clear Zone</a>
+                <a href="{% url 'fizic_inventory:zone_detail' zone.code %}" class="btn btn-primary">View</a>
+                <a href="{% url 'fizic_inventory:edit_zone' zone.code %}" class="btn btn-primary">Edit</a>
+                <a href="{% url 'fizic_inventory:clear_zone' zone.code %}" class="btn btn-danger">Clear</a>
             </td>
         </tr>
         {% empty %}
-        <tr><td colspan="6">No zones found.</td></tr>
+        <tr>
+            <td colspan="6">No zones found.</td>
+        </tr>
         {% endfor %}
     </tbody>
 </table>

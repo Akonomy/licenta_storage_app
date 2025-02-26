@@ -5,12 +5,13 @@ from apps.inventory.models import Box  # Dacă este necesar
 
 
 
+
 from django.contrib.auth.decorators import login_required, user_passes_test
 
 
 
 
-from .models import Container, SYMBOL_CHOICES,COLOR_CHOICES, ContainerEvent, Zone
+from .models import Container, SYMBOL_CHOICES,COLOR_CHOICES, ContainerEvent, Zone ,ZONE_TYPE_CHOICES 
 
 
 
@@ -65,18 +66,42 @@ def container_detail(request, code):
     events = container.events.all().order_by('-event_date')
     return render(request, 'fizic_inventory/container_detail.html', {'container': container, 'events': events})
 
-
 @login_required
 @user_passes_test(lambda u: u.has_page_access('admin'))
 def add_box_view(request):
     """
     Permite adăugarea unui container (opțiunea add box).
     Dacă se specifică un cod și acesta există, containerul este marcat ca returned.
+    Permite, de asemenea, selectarea opțională a unei zone.
+    Dacă zona nu este specificată, se alege automat:
+      - În primul rând, se caută o zonă de tip 'receptie' cu locuri libere.
+      - Dacă nu se găsește, se caută o zonă de tip 'depozit' cu locuri libere.
     """
     if request.method == 'POST':
         code = request.POST.get('code', '').strip()
         color = request.POST.get('color')
         symbol = request.POST.get('symbol')
+        zone_id = request.POST.get('zone')  # noul câmp pentru selectarea zonei
+
+        # Determină zona: dacă e specificată, folosește-o; altfel, auto-assign
+        if zone_id:
+            zone = get_object_or_404(Zone, id=zone_id)
+        else:
+            zone = None
+            # Caută zone de tip 'receptie'
+            receptie_zones = Zone.objects.filter(type='receptie')
+            for z in receptie_zones:
+                if z.capacity > z.current_occupancy:
+                    zone = z
+                    break
+            # Dacă nu s-a găsit nicio zonă de receptie, caută zone de tip 'depozit'
+            if not zone:
+                depozit_zones = Zone.objects.filter(type='depozit')
+                for z in depozit_zones:
+                    if z.capacity > z.current_occupancy:
+                        zone = z
+                        break
+
         if code:
             container, status = Container.add_box(code, color, symbol)
         else:
@@ -88,13 +113,20 @@ def add_box_view(request):
                 notes="New container created with auto-generated code."
             )
             status = "created"
+        # Asociază containerul cu zona determinată (dacă există)
+        if zone:
+            container.zone = zone
+            container.save()
+            zone.update_occupancy()
+
         messages.success(request, f"Container {container.code} {status}.")
         return redirect('fizic_inventory:container_detail', code=container.code)
     
-    # Adaugă opțiunile pentru simbol și culoare în context
+    # Adaugă opțiunile pentru simbol, culoare și lista zonelor disponibile în context
     context = {
         'container_symbol_choices': SYMBOL_CHOICES,
         'container_color_choices': COLOR_CHOICES,
+        'zones': Zone.objects.all(),  # opțional, poți filtra doar zonele relevante
     }
     return render(request, 'fizic_inventory/add_box.html', context)
 
@@ -192,6 +224,39 @@ def reset_container_defaults_view(request):
 
 @login_required
 @user_passes_test(lambda u: u.has_page_access('admin'))
+def add_zone_view(request):
+    """
+    Permite adăugarea unei noi zone.
+    Dacă se specifică datele, creează o zonă cu un cod auto-generat.
+    """
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        zone_type = request.POST.get('type', 'depozit')
+        capacity = request.POST.get('capacity')
+        if not name:
+            messages.error(request, "Numele zonei este obligatoriu.")
+            return redirect('fizic_inventory:add_zone')
+        try:
+            capacity = int(capacity)
+        except (ValueError, TypeError):
+            messages.error(request, "Capacitatea trebuie să fie un număr întreg.")
+            return redirect('fizic_inventory:add_zone')
+        
+        zone = Zone.objects.create(name=name, type=zone_type, capacity=capacity)
+        messages.success(request, f"Zone {zone.code} a fost adăugată cu succes.")
+        return redirect('fizic_inventory:zone_detail', code=zone.code)
+    
+    context = {
+        'zone_type_choices': ZONE_TYPE_CHOICES,
+    }
+    return render(request, 'fizic_inventory/add_zone.html', context)
+
+
+
+
+
+@login_required
+@user_passes_test(lambda u: u.has_page_access('admin'))
 def zone_list(request):
     zones = Zone.objects.all()
     return render(request, 'fizic_inventory/zone_list.html', {'zones': zones})
@@ -216,7 +281,11 @@ def edit_zone_view(request, code):
         zone.save()
         messages.success(request, f"Zone {zone.code} updated.")
         return redirect('fizic_inventory:zone_detail', code=zone.code)
-    return render(request, 'fizic_inventory/edit_zone.html', {'zone': zone})
+    context = {
+        'zone': zone,
+        'zone_type_choices': ZONE_TYPE_CHOICES,  # Transmiți opțiunile aici
+    }
+    return render(request, 'fizic_inventory/edit_zone.html', context)
 
 
 @login_required

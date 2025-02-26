@@ -8,7 +8,7 @@
 <p><strong>Type:</strong> {{ zone.get_type_display }}</p>
 <p><strong>Capacity:</strong> {{ zone.capacity }}</p>
 <p><strong>Current Occupancy:</strong> {{ zone.current_occupancy }}</p>
-<a href="{% url 'fizic_inventory:edit_zone' zone.code %}" class="btn">Edit Zone</a>
+<a href="{% url 'fizic_inventory:edit_zone' zone.code %}" class="btn btn-primary">Edit Zone</a>
 <a href="{% url 'fizic_inventory:clear_zone' zone.code %}" class="btn btn-danger">Clear Zone</a>
 <h2>Containers in this Zone</h2>
 <table>
@@ -29,7 +29,7 @@
             <td>{{ container.get_status_display }}</td>
             <td>{% if container.box %}{{ container.box }}{% else %}--{% endif %}</td>
             <td>
-                <a href="{% url 'fizic_inventory:container_detail' container.code %}" class="btn">View</a>
+                <a href="{% url 'fizic_inventory:container_detail' container.code %}" class="btn btn-primary">View</a>
             </td>
         </tr>
         {% empty %}

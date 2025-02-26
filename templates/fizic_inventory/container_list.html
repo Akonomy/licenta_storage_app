@@ -30,8 +30,8 @@
             <td>{% if container.box %}{{ container.box }}{% else %}--{% endif %}</td>
             <td>{{ container.virtual_box_code|default:"--" }}</td>
             <td>
-                <a href="{% url 'fizic_inventory:container_detail' container.code %}" class="btn">View</a>
-                <a href="{% url 'fizic_inventory:edit_container' container.code %}" class="btn">Edit</a>
+                <a href="{% url 'fizic_inventory:container_detail' container.code %}" class="btn btn-primary">View</a>
+                <a href="{% url 'fizic_inventory:edit_container' container.code %}" class="btn btn-primary">Edit</a>
                 <a href="{% url 'fizic_inventory:reset_container' container.code %}" class="btn btn-danger">Reset</a>
             </td>
         </tr>

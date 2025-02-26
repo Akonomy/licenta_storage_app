@@ -6,6 +6,7 @@
 <h1>Add Container</h1>
 <form method="post">
     {% csrf_token %}
+    
     <label for="code">Container Code (optional):</label>
     <input type="text" name="code" id="code" placeholder="Leave empty for auto-generation">
     
@@ -20,6 +21,14 @@
     <select name="symbol" id="symbol">
         {% for value, display in container_symbol_choices %}
             <option value="{{ value }}">{{ display }}</option>
+        {% endfor %}
+    </select>
+    
+    <label for="zone">Zone (optional):</label>
+    <select name="zone" id="zone">
+        <option value="">Auto assign</option>
+        {% for zone in zones %}
+            <option value="{{ zone.id }}">{{ zone.name }} ({{ zone.get_type_display }})</option>
         {% endfor %}
     </select>
     

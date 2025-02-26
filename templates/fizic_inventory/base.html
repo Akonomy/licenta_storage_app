@@ -81,6 +81,10 @@
             color: #666;
             margin-bottom: 15px;
         }
+
+
+
+
         /* Butoane */
         .btn {
             display: inline-block;
@@ -131,7 +135,35 @@
         select.color-select option[value="red"] { background-color: #ffcccc; }
         select.color-select option[value="blue"] { background-color: #cce5ff; }
         select.color-select option[value="green"] { background-color: #ccffcc; }
-        select.color-select option[value="bej"] { background-color: #f5f5dc; }
+        select.color-select option[value="simple"] { background-color: #f5f5dc; }
+
+
+
+
+                table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+table th, table td {
+    border: 1px solid #ccc;
+    padding: 8px 12px;
+    text-align: left;
+}
+
+table th {
+    background-color: #f4f4f4;
+}
+
+table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+table tr:nth-child(odd) {
+    background-color: #ffffff;
+}
+
         
         {% block extra_css %}{% endblock %}
     </style>
@@ -143,6 +175,7 @@
         <a href="{% url 'fizic_inventory:container_list' %}">📦 Containers</a>
         <a href="{% url 'fizic_inventory:zone_list' %}">📋 Zones</a>
         <a href="{% url 'fizic_inventory:add_box' %}">➕ Add Container</a>
+        <a href="{% url 'fizic_inventory:add_zone' %}">➕ Add Zone</a>
         <a href="{% url 'fizic_inventory:check_box' %}">🔍 Check Container</a>
     </div>
     

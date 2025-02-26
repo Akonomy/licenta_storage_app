@@ -1,0 +1,24 @@
+{% extends "fizic_inventory/base.html" %}
+
+{% block title %}Add Zone{% endblock %}
+
+{% block content %}
+<h1>Add Zone</h1>
+<form method="post">
+    {% csrf_token %}
+    <label for="name">Zone Name:</label>
+    <input type="text" name="name" id="name" placeholder="Enter zone name" required>
+    
+    <label for="type">Zone Type:</label>
+    <select name="type" id="type">
+        {% for value, display in zone_type_choices %}
+            <option value="{{ value }}">{{ display }}</option>
+        {% endfor %}
+    </select>
+    
+    <label for="capacity">Capacity:</label>
+    <input type="number" name="capacity" id="capacity" placeholder="Enter capacity" required>
+    
+    <input type="submit" value="Add Zone">
+</form>
+{% endblock %}
