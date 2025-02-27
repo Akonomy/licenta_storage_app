@@ -4,6 +4,9 @@ from django import forms
 from .models import Task
 from apps.inventory.models import Box, Section
 
+
+from apps.fizic_inventory.models import Container, Zone
+
 # apps/robot_interface/forms.py
 
 class TaskForm(forms.ModelForm):
@@ -30,7 +33,7 @@ class TaskForm(forms.ModelForm):
             if not box or not target_section:
                 raise forms.ValidationError("Box and target section are required for moving a box.")
             # Automatically set the source_section based on the box's current location
-            cleaned_data['source_section'] = box.section
+            cleaned_data['source_section'] = box.zone
         elif task_type == 'add_box':
             if not box or not target_section:
                 raise forms.ValidationError("Box and target section are required for adding a box.")
@@ -38,7 +41,7 @@ class TaskForm(forms.ModelForm):
             if not box:
                 raise forms.ValidationError("Box is required for removing a box.")
             # Automatically set the source_section based on the box's current location
-            cleaned_data['source_section'] = box.section
+            cleaned_data['source_section'] = box.zone
         elif task_type == 'custom_action':
             if not custom_action:
                 raise forms.ValidationError("Custom action is required for a custom task.")
