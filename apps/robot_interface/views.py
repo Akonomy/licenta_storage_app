@@ -70,16 +70,16 @@ def fetch_tasks_api(request):
         }
         if task.source_section:
             task_data['source_section'] = {
-                'name': task.source_section.nume_custom,
-                'type': task.source_section.tip_sectie,
+                'name': task.source_section.name,
+                'type': task.source_section.type,
             }
         else:
             task_data['source_section'] = None
 
         if task.target_section:
             task_data['target_section'] = {
-                'name': task.target_section.nume_custom,
-                'type': task.target_section.tip_sectie,
+                'name': task.target_section.name,
+                'type': task.target_section.type
             }
         else:
             task_data['target_section'] = None
