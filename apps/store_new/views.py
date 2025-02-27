@@ -326,8 +326,8 @@ def checkout(request):
         return redirect('store_new:product_list')
 
     total = sum(int(item['price']) * item['quantity'] for item in cart.values())
-    if total < 100:
-        messages.error(request, 'Comanda trebuie să fie de cel puțin 100 lei.')
+    if total < 20:
+        messages.error(request, 'Comanda trebuie să fie de cel puțin 20 lei.')
         return redirect('store_new:cart_view')
 
     user = request.user
