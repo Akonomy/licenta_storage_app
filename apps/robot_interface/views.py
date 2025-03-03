@@ -87,6 +87,46 @@ def fetch_tasks_api(request):
         tasks_data.append(task_data)
     return JsonResponse({'tasks': tasks_data})
 
+
+
+
+@api_view(['GET'])
+@authentication_classes([CustomJWTAuthentication])
+@permission_classes([IsAuthenticated])
+def fetch_first_task_api(request):
+    """
+    Retrieves the oldest pending task from the queue.
+    """
+    task = Task.objects.filter(status='pending').order_by('created_at').first()
+    if not task:
+        return JsonResponse({'message': 'No pending tasks found'}, status=404)
+
+    task_data = {
+        'id': task.id,
+        'task_type': task.task_type,
+        'box_code': task.box.code if task.box else None,
+        'custom_action': task.custom_action,
+    }
+    if task.source_section:
+        task_data['source_section'] = {
+            'name': task.source_section.name,
+            'type': task.source_section.type,
+        }
+    else:
+        task_data['source_section'] = None
+
+    if task.target_section:
+        task_data['target_section'] = {
+            'name': task.target_section.name,
+            'type': task.target_section.type,
+        }
+    else:
+        task_data['target_section'] = None
+
+    return JsonResponse({'task': task_data})
+
+    
+
 @api_view(['POST'])
 @authentication_classes([CustomJWTAuthentication])
 @permission_classes([IsAuthenticated])

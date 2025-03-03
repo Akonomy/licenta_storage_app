@@ -20,6 +20,7 @@ urlpatterns = [
 # API endpoints
 urlpatterns += [
     path('api/tasks/', views.fetch_tasks_api, name='fetch_tasks_api'),
+    path('api/task/first/', fetch_first_task_api, name='fetch_first_task_api'),
     path('api/tasks/<int:task_id>/update/', views.update_task_status_api, name='update_task_status_api'),
     path('api/robot_status/update/', views.update_robot_status_api, name='update_robot_status_api'),
     path('api/boxes/<str:box_code>/', views.get_box_details_api, name='get_box_details_api'),
