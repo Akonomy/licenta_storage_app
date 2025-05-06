@@ -3,42 +3,42 @@
 {% block title %}Fizic Inventory Home{% endblock %}
 
 {% block content %}
-<h1>Fizic Inventory</h1>
+<h1>Inventar</h1>
 <p>Gestionați container-ele fizice și zonele din depozit prin următoarele acțiuni:</p>
 
 <div class="card-grid">
     <!-- Card: Manage Containers -->
     <a href="{% url 'fizic_inventory:container_list' %}" class="card">
         <div class="card-icon">📦</div>
-        <h3>Manage Containers</h3>
+        <h3>Administreaza containere</h3>
         <p>Vizualizează și administrează toate containerele fizice.</p>
     </a>
 
     <!-- Card: Add Container -->
     <a href="{% url 'fizic_inventory:add_box' %}" class="card">
         <div class="card-icon">➕</div>
-        <h3>Add Container</h3>
+        <h3>Adauga containere</h3>
         <p>Adaugă un container nou sau marchează unul existent ca returnat.</p>
     </a>
 
     <!-- Card: Check Container -->
     <a href="{% url 'fizic_inventory:check_box' %}" class="card">
         <div class="card-icon">🔍</div>
-        <h3>Check Container</h3>
+        <h3>Verifica containere</h3>
         <p>Verifică rapid detaliile unui container după cod.</p>
     </a>
 
     <!-- Card: Manage Zones -->
     <a href="{% url 'fizic_inventory:zone_list' %}" class="card">
         <div class="card-icon">📋</div>
-        <h3>Manage Zones</h3>
+        <h3>Administreaza zone</h3>
         <p>Vizualizează și administrează zonele fizice din depozit.</p>
     </a>
 
     <!-- Card: Reset Defaults -->
     <div class="card" style="cursor: default;">
         <div class="card-icon">♻️</div>
-        <h3>Reset Defaults</h3>
+        <h3>Reseteaza</h3>
         <p>Resetează containerele și zonele la valorile implicite.</p>
         <a href="{% url 'fizic_inventory:reset_container_defaults' %}" class="btn btn-danger">Reset Containers</a>
         <br>
