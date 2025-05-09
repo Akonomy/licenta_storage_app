@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: licenta-storage-app
+    env: python
+    plan: free
+    branch: master
+    buildCommand: |
+      pip install -r requirements.txt
+      python manage.py collectstatic --noinput
+    startCommand: gunicorn AutoStorage.wsgi:application
+    envVars:
+      - key: SECRET_KEY
+        sync: false
+      - key: DEBUG
+        value: "True"
+      - key: MONGO_NAME
+        sync: false
+      - key: MONGO_HOST
+        sync: false
+      - key: ALLOWED_HOSTS
+        value: "localhost,127.0.0.1,*.onrender.com,www.depozitautomat.shop,depozitautomat.shop"

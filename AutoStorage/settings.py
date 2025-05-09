@@ -37,7 +37,9 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1', 't')
 
 # ALLOWED_HOSTS - poți citi din .env și apoi să-l transformi într-o listă
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
+ALLOWED_HOSTS_RAW = os.getenv('ALLOWED_HOSTS', '')
+ALLOWED_HOSTS = ALLOWED_HOSTS_RAW.split(',') if ALLOWED_HOSTS_RAW else []
+
 
 
 # Application definition
@@ -208,5 +210,12 @@ LANGUAGES = [
     ('ro', 'Română'),
 ]
 
+
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://www.depozitautomat.shop",
+    "https://depozitautomat.shop",
+    "https://*.onrender.com"
+]
 
 
